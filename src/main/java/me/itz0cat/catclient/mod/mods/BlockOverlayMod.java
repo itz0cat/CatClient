@@ -147,14 +147,14 @@ public class BlockOverlayMod extends Mod {
         matrices.translate(drawX, drawY, drawZ);
 
         if (enableFill.isEnabled()) {
-            RenderSystem.setShader(net.minecraft.client.gl.ShaderProgramKeys.POSITION_COLOR);
+            RenderSystem.setShader(net.minecraft.client.render.GameRenderer::getPositionColorProgram);
             net.minecraft.client.render.BufferBuilder buffer = tessellator.begin(net.minecraft.client.render.VertexFormat.DrawMode.QUADS, net.minecraft.client.render.VertexFormats.POSITION_COLOR);
             drawBoxFill(matrices, buffer, animW, animH, animD, fColor);
             net.minecraft.client.render.BufferRenderer.drawWithGlobalProgram(buffer.end());
         }
 
         if (enableOutline.isEnabled()) {
-            RenderSystem.setShader(net.minecraft.client.gl.ShaderProgramKeys.RENDERTYPE_LINES);
+            RenderSystem.setShader(net.minecraft.client.render.GameRenderer::getRenderTypeLinesProgram);
             RenderSystem.lineWidth((float) outlineThickness.getValue());
             net.minecraft.client.render.BufferBuilder buffer = tessellator.begin(net.minecraft.client.render.VertexFormat.DrawMode.DEBUG_LINES, net.minecraft.client.render.VertexFormats.LINES);
             drawBoxOutline(matrices, buffer, animW, animH, animD, outColor);

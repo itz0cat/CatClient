@@ -70,7 +70,7 @@ public class ChatHudHook {
             var chatHudLine = iterator.next();
 
             // We remove occurrences because we want to remove existing compacted messages too.
-            var contentWithoutOccurrences = message.removeTextModifications(chatHudLine.comp_893());
+            var contentWithoutOccurrences = message.removeTextModifications(chatHudLine.content());
             var textWithoutOccurrences = message.removeTextModifications(originalMessage);
 
             if (contentWithoutOccurrences.equals(textWithoutOccurrences)) {

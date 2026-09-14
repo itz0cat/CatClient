@@ -71,7 +71,6 @@ public class MinecraftClientMixin {
 
     @Inject(method = "run", at = @At("HEAD"))
     private void onStart(CallbackInfo ci) {
-        new Client();
         CatClient.INSTANCE.init();
     }
 

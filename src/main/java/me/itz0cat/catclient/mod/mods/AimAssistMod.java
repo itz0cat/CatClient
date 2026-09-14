@@ -245,7 +245,7 @@ public class AimAssistMod extends Mod {
         com.mojang.blaze3d.systems.RenderSystem.disableDepthTest();
 
         net.minecraft.client.render.Tessellator tessellator = net.minecraft.client.render.Tessellator.getInstance();
-        com.mojang.blaze3d.systems.RenderSystem.setShader(net.minecraft.client.gl.ShaderProgramKeys.RENDERTYPE_LINES);
+        com.mojang.blaze3d.systems.RenderSystem.setShader(net.minecraft.client.render.GameRenderer::getRenderTypeLinesProgram);
         com.mojang.blaze3d.systems.RenderSystem.lineWidth(2.0f);
 
         net.minecraft.client.render.BufferBuilder buffer = tessellator.begin(net.minecraft.client.render.VertexFormat.DrawMode.DEBUG_LINES, net.minecraft.client.render.VertexFormats.LINES);
