@@ -4,8 +4,6 @@ import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCol;
-import lombok.Getter;
-import lombok.Setter;
 import me.itz0cat.catclient.CatClient;
 import me.itz0cat.catclient.api.font.JColor;
 import me.itz0cat.catclient.gui.UI;
@@ -18,14 +16,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KeystrokeHelper {
-    @Getter @Setter
     private int key;
-    @Getter @Setter
     private String display;
-    @Getter @Setter
     private long pressTime;
-    @Getter @Setter
     private boolean pressed;
+
+    public int getKey() { return key; }
+    public void setKey(int key) { this.key = key; }
+    public String getDisplay() { return display; }
+    public void setDisplay(String display) { this.display = display; }
+    public long getPressTime() { return pressTime; }
+    public void setPressTime(long pressTime) { this.pressTime = pressTime; }
+    public boolean isPressed() { return pressed; }
+    public void setPressed(boolean pressed) { this.pressed = pressed; }
     public static List<KeystrokeHelper> list = new ArrayList<>();
     public KeystrokeHelper(int key, String display) {
         this.key = key;

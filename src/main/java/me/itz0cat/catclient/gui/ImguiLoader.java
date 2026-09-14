@@ -5,7 +5,6 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
-import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.main.Main;
 
@@ -29,75 +28,79 @@ public class ImguiLoader {
     public static final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     public static final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
 
-    @Getter
     private static int catLogo;
-
-    @Getter
     private static int catText;
 
-    @Getter
     private static ImFont monoFont18;
-    @Getter
     private static ImFont monoFont20;
-    @Getter
     private static ImFont monoFont24;
-    @Getter
     private static ImFont monoFont32;
-    @Getter
     private static ImFont monoFont48;
 
-
-    @Getter
-    private static ImFont dosisFont20;
-    @Getter
     private static ImFont dosisFont18;
-    @Getter
+    private static ImFont dosisFont20;
     private static ImFont dosisFont24;
-    @Getter
     private static ImFont dosisFont32;
-    @Getter
     private static ImFont dosisFont48;
-    @Getter
     private static ImFont dosisFont64;
 
-    @Getter
-    private static ImFont boldDosisFont20;
-    @Getter
     private static ImFont boldDosisFont18;
-    @Getter
+    private static ImFont boldDosisFont20;
     private static ImFont boldDosisFont24;
-    @Getter
     private static ImFont boldDosisFont32;
-    @Getter
     private static ImFont boldDosisFont48;
-    @Getter
     private static ImFont boldDosisFont64;
 
-    @Getter
-    private static ImFont mcFont20;
-    @Getter
     private static ImFont mcFont18;
-    @Getter
+    private static ImFont mcFont20;
     private static ImFont mcFont24;
-    @Getter
     private static ImFont mcFont32;
-    @Getter
     private static ImFont mcFont48;
-    @Getter
     private static ImFont mcFont64;
 
-    @Getter
     private static ImFont fontAwesome18;
-    @Getter
     private static ImFont fontAwesome20;
-    @Getter
     private static ImFont fontAwesome24;
-    @Getter
     private static ImFont fontAwesome32;
-    @Getter
     private static ImFont fontAwesome48;
-    @Getter
     private static ImFont fontAwesome64;
+
+    public static int getCatLogo() { return catLogo; }
+    public static int getCatText() { return catText; }
+
+    public static ImFont getMonoFont18() { return monoFont18; }
+    public static ImFont getMonoFont20() { return monoFont20; }
+    public static ImFont getMonoFont24() { return monoFont24; }
+    public static ImFont getMonoFont32() { return monoFont32; }
+    public static ImFont getMonoFont48() { return monoFont48; }
+
+    public static ImFont getDosisFont18() { return dosisFont18; }
+    public static ImFont getDosisFont20() { return dosisFont20; }
+    public static ImFont getDosisFont24() { return dosisFont24; }
+    public static ImFont getDosisFont32() { return dosisFont32; }
+    public static ImFont getDosisFont48() { return dosisFont48; }
+    public static ImFont getDosisFont64() { return dosisFont64; }
+
+    public static ImFont getBoldDosisFont18() { return boldDosisFont18; }
+    public static ImFont getBoldDosisFont20() { return boldDosisFont20; }
+    public static ImFont getBoldDosisFont24() { return boldDosisFont24; }
+    public static ImFont getBoldDosisFont32() { return boldDosisFont32; }
+    public static ImFont getBoldDosisFont48() { return boldDosisFont48; }
+    public static ImFont getBoldDosisFont64() { return boldDosisFont64; }
+
+    public static ImFont getMcFont18() { return mcFont18; }
+    public static ImFont getMcFont20() { return mcFont20; }
+    public static ImFont getMcFont24() { return mcFont24; }
+    public static ImFont getMcFont32() { return mcFont32; }
+    public static ImFont getMcFont48() { return mcFont48; }
+    public static ImFont getMcFont64() { return mcFont64; }
+
+    public static ImFont getFontAwesome18() { return fontAwesome18; }
+    public static ImFont getFontAwesome20() { return fontAwesome20; }
+    public static ImFont getFontAwesome24() { return fontAwesome24; }
+    public static ImFont getFontAwesome32() { return fontAwesome32; }
+    public static ImFont getFontAwesome48() { return fontAwesome48; }
+    public static ImFont getFontAwesome64() { return fontAwesome64; }
     public static void onGlfwInit(long handle) {
         initializeImGui();
         imGuiGlfw.init(handle,true);
