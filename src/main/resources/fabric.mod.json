@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "catclient",
+  "version": "${version}",
+  "name": "CatClient",
+  "description": "Next-generation Fabric 1.21.11 utility client with Blue Flame aesthetics, ImGui UI, and Itz0Cat Cloud Backend.",
+  "authors": [
+    "itz0cat"
+  ],
+  "contact": {
+    "homepage": "https://itz0cat.onrender.com",
+    "sources": "https://github.com/itz0cat/CatClient"
+  },
+  "license": "MIT",
+  "icon": "assets/catclient/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.itz0cat.catclient.CatClient"
+    ]
+  },
+  "mixins": [
+    "catclient.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
