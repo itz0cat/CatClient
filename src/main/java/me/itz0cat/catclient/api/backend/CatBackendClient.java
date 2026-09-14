@@ -7,32 +7,43 @@ import com.google.gson.JsonObject;
 import me.itz0cat.catclient.CatClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.text.Text;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CatBackendClient {
 
     private static final Gson GSON = new Gson();
-    
-    // Primary Itz0Cat Render service with fallback
-    public static String PRIMARY_BACKEND_URL = "https://itz0cat.onrender.com";
-    public static String FALLBACK_BACKEND_URL = "https://catgame-backend-btit.onrender.com";
-    
-    private static final int TIMEOUT_MS = 4000;
+
+    // Primary Render Web Service URL (free tier) and fallbacks
+    public static String PRIMARY_BACKEND_URL = "https://catclient-backend.onrender.com";
+    public static String FALLBACK_BACKEND_URL = "https://itz0cat.onrender.com";
+    public static String SECONDARY_FALLBACK_URL = "https://catgame-backend-btit.onrender.com";
+
+    // Normal fast timeout (8s). For cold start detection, Render takes 25-50s
+    private static final int INITIAL_TIMEOUT_MS = 8000;
+    private static final int COLD_START_TIMEOUT_MS = 45000;
+    private static final int MAX_RETRIES = 4;
+    private static final int[] RETRY_DELAYS_SEC = { 5, 8, 12, 16 };
+
+    private static final AtomicBoolean isWakingUp = new AtomicBoolean(false);
+    private static long lastNotificationTime = 0;
 
     public static final Set<UUID> onlineClientUsers = Collections.newSetFromMap(new ConcurrentHashMap<>());
     public static final Map<UUID, String> playerCapes = new ConcurrentHashMap<>();
     public static final List<String> availableCapes = new ArrayList<>();
-    public static String activeMotd = "Welcome to CatClient 1.21.11 • Powered by Itz0Cat";
+    public static String activeMotd = "🐾 CatClient 1.21.11 • Blue Flame Edition • Powered by Itz0Cat";
 
     static {
         availableCapes.add("cat-blueflame");
@@ -45,7 +56,7 @@ public class CatBackendClient {
     }
 
     public static void init() {
-        CatClient.LOGGER.info("[CatClient] Connecting to Itz0Cat Cloud Backend: {}", PRIMARY_BACKEND_URL);
+        CatClient.LOGGER.info("[CatClient] Initializing backend client: {}", PRIMARY_BACKEND_URL);
         fetchMotd();
     }
 
@@ -65,7 +76,7 @@ public class CatBackendClient {
                 refreshPlayerCosmetics(mc.player.getUuid());
                 syncOnlinePlayers();
             } catch (Exception e) {
-                CatClient.LOGGER.warn("[CatClient] Failed to register session with Itz0Cat backend: {}", e.getMessage());
+                CatClient.LOGGER.warn("[CatClient] Failed to register session: {}", e.getMessage());
             }
         });
     }
@@ -164,31 +175,80 @@ public class CatBackendClient {
     }
 
     private static String postRequest(String endpoint, String jsonBody) {
-        String res = executeHttp(PRIMARY_BACKEND_URL + endpoint, "POST", jsonBody);
-        if (res == null) {
-            res = executeHttp(FALLBACK_BACKEND_URL + endpoint, "POST", jsonBody);
-        }
-        return res;
+        return executeWithIdleDetection(endpoint, "POST", jsonBody);
     }
 
     private static String getRequest(String endpoint) {
-        String res = executeHttp(PRIMARY_BACKEND_URL + endpoint, "GET", null);
-        if (res == null) {
-            res = executeHttp(FALLBACK_BACKEND_URL + endpoint, "GET", null);
-        }
-        return res;
+        return executeWithIdleDetection(endpoint, "GET", null);
     }
 
-    private static String executeHttp(String fullUrl, String method, String body) {
+    /**
+     * Executes HTTP requests with built-in Render Free Tier idle cold-start detection,
+     * countdown notification to in-game chat, and exponential retry loop.
+     */
+    private static String executeWithIdleDetection(String endpoint, String method, String body) {
+        String[] targets = { PRIMARY_BACKEND_URL, FALLBACK_BACKEND_URL, SECONDARY_FALLBACK_URL };
+
+        for (String base : targets) {
+            String fullUrl = base + endpoint;
+
+            for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
+                int timeout = (attempt == 0) ? INITIAL_TIMEOUT_MS : COLD_START_TIMEOUT_MS;
+                HttpResult result = attemptRequest(fullUrl, method, body, timeout);
+
+                if (result.isSuccess()) {
+                    if (isWakingUp.getAndSet(false)) {
+                        sendClientMessage("§b🐾 [CatClient] §aBackend is now awake and online! Connected to cloud.");
+                    }
+                    return result.data;
+                }
+
+                // Check if this looks like a Render idle container spin-up
+                boolean looksLikeColdStart = result.isColdStartCandidate();
+
+                if (looksLikeColdStart && attempt < MAX_RETRIES - 1) {
+                    int waitSec = RETRY_DELAYS_SEC[attempt];
+
+                    if (!isWakingUp.getAndSet(true)) {
+                        sendClientMessage("§b🐾 [CatClient] §eRender server is waking up from idle (free tier cold start)...");
+                    }
+
+                    // Throttle notification so chat is not spammed
+                    long now = System.currentTimeMillis();
+                    if (now - lastNotificationTime > 3000) {
+                        sendClientMessage(String.format("§b🐾 [CatClient] §7Waking up free-tier server... Retrying in §e%ds§7 (attempt §e%d/%d§7)", waitSec, attempt + 1, MAX_RETRIES));
+                        lastNotificationTime = now;
+                    }
+
+                    try {
+                        Thread.sleep(waitSec * 1000L);
+                    } catch (InterruptedException ignored) {
+                        Thread.currentThread().interrupt();
+                        return null;
+                    }
+                } else if (!looksLikeColdStart) {
+                    // Not a cold start (e.g. 404), break to next fallback url
+                    break;
+                }
+            }
+        }
+
+        if (isWakingUp.getAndSet(false)) {
+            sendClientMessage("§b🐾 [CatClient] §cCould not reach Render backend after retries. Continuing in offline mode.");
+        }
+        return null;
+    }
+
+    private static HttpResult attemptRequest(String fullUrl, String method, String body, int timeoutMs) {
         HttpURLConnection conn = null;
         try {
             URL url = new URL(fullUrl);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method);
-            conn.setConnectTimeout(TIMEOUT_MS);
-            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setConnectTimeout(timeoutMs);
+            conn.setReadTimeout(timeoutMs);
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("User-Agent", "CatClient/1.21.11 (Itz0Cat)");
+            conn.setRequestProperty("User-Agent", "CatClient/1.21.11 (Fabric)");
 
             if ("POST".equalsIgnoreCase(method) && body != null) {
                 conn.setDoOutput(true);
@@ -205,13 +265,58 @@ public class CatBackendClient {
                     while ((line = br.readLine()) != null) {
                         sb.append(line);
                     }
-                    return sb.toString();
+                    return new HttpResult(true, code, sb.toString(), null);
                 }
+            } else {
+                return new HttpResult(false, code, null, null);
             }
-        } catch (Exception ignored) {
+        } catch (SocketTimeoutException | ConnectException e) {
+            return new HttpResult(false, -1, null, e);
+        } catch (Exception e) {
+            return new HttpResult(false, -2, null, e);
         } finally {
             if (conn != null) conn.disconnect();
         }
-        return null;
+    }
+
+    /**
+     * Sends an asynchronous, thread-safe message to the player's in-game chat HUD.
+     */
+    public static void sendClientMessage(String message) {
+        try {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            if (mc != null && mc.inGameHud != null) {
+                mc.execute(() -> {
+                    if (mc.inGameHud != null && mc.inGameHud.getChatHud() != null) {
+                        mc.inGameHud.getChatHud().addMessage(Text.literal(message));
+                    }
+                });
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private static class HttpResult {
+        final boolean success;
+        final int statusCode;
+        final String data;
+        final Exception exception;
+
+        HttpResult(boolean success, int statusCode, String data, Exception exception) {
+            this.success = success;
+            this.statusCode = statusCode;
+            this.data = data;
+            this.exception = exception;
+        }
+
+        boolean isSuccess() {
+            return success;
+        }
+
+        boolean isColdStartCandidate() {
+            // Render returns 502/503/504 while booting or times out on TCP connection
+            if (statusCode == 502 || statusCode == 503 || statusCode == 504) return true;
+            if (exception instanceof SocketTimeoutException || exception instanceof ConnectException) return true;
+            return false;
+        }
     }
 }
