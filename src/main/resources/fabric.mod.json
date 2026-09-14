@@ -3,7 +3,7 @@
   "id": "catclient",
   "version": "${version}",
   "name": "CatClient",
-  "description": "Next-generation Fabric 1.21.11 utility client with Blue Flame aesthetics, ImGui UI, and Itz0Cat Cloud Backend.",
+  "description": "CatClient Fabric 1.21.11 utility mod with Blue Flame theme.",
   "authors": [
     "itz0cat"
   ],
