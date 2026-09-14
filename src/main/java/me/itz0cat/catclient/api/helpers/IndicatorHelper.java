@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import java.util.UUID;
 
 public class IndicatorHelper {
-    public static Identifier badgeIcon = Identifier.of("catclient", "icon.png");
+    public static Identifier badgeIcon = Identifier.of("catclient", "badge.png");
 
     public static void addBadge(Entity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
         if (!CatClient.modManager().getMod(GeneralSettings.class).showClientBadges.isEnabled()) return;
