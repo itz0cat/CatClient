@@ -102,7 +102,7 @@ public class CatBackendClient {
             try {
                 JsonArray uuidArray = new JsonArray();
                 for (PlayerListEntry entry : mc.getNetworkHandler().getPlayerList()) {
-                    uuidArray.add(entry.getProfile().getId().toString());
+                    uuidArray.add(entry.getProfile().id().toString());
                 }
 
                 JsonObject payload = new JsonObject();

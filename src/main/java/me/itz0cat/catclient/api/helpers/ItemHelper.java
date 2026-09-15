@@ -31,9 +31,12 @@ public class ItemHelper {
         if (mc.player == null) {
             return null;
         }
-        items.addAll(mc.player.getInventory().armor);
-        items.addAll(mc.player.getInventory().offHand);
-        items.addAll(mc.player.getInventory().main);
+        for (int i = 0; i < mc.player.getInventory().size(); i++) {
+            ItemStack stack = mc.player.getInventory().getStack(i);
+            if (!stack.isEmpty()) {
+                items.add(stack);
+            }
+        }
         return items;
     }
     public static int getTotal(ItemStack stack) {

@@ -174,7 +174,7 @@ public class ToggleSneakMod extends Mod implements Renderable {
 
     @EventHandler
     public void onKey(KeyPressEvent e) {
-        if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), mc.options.sneakKey.getDefaultKey().getCode())) {
+        if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), mc.options.sneakKey.getDefaultKey().getCode())) {
             toggled = !toggled;
         }
     }

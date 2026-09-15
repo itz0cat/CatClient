@@ -1,7 +1,6 @@
 package me.itz0cat.catclient.mixin;
 
 import com.google.common.collect.Iterables;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.itz0cat.catclient.CatClient;
 import me.itz0cat.catclient.api.event.events.HudRenderEvent;
@@ -75,6 +74,13 @@ public class InGameHudMixin {
         if (CatClient.modManager().getMod(ArmorMod.class).isEnabled()) this.armorhud$renderArmorHUD(renderTickCounter, drawContext);
     }
 
+    private static final net.minecraft.entity.EquipmentSlot[] ARMOR_SLOTS = new net.minecraft.entity.EquipmentSlot[] {
+        net.minecraft.entity.EquipmentSlot.HEAD,
+        net.minecraft.entity.EquipmentSlot.CHEST,
+        net.minecraft.entity.EquipmentSlot.LEGS,
+        net.minecraft.entity.EquipmentSlot.FEET
+    };
+
     private void armorhud$renderArmorHUD(RenderTickCounter renderTickCounter, DrawContext drawContext) {
         ArmorMod mod = CatClient.modManager().getMod(ArmorMod.class);
 
@@ -85,11 +91,11 @@ public class InGameHudMixin {
         RenderSystem.defaultBlendFunc();
         if(mod.direction.getMode().equals("Vertical")) {
             for (int i = 0; i < 4; i++) {
-                this.renderHotbarItem(drawContext, xPos + 3, yPos + 16 * i, renderTickCounter, player, player.getInventory().armor.get(3 - i), 1);
+                this.renderHotbarItem(drawContext, xPos + 3, yPos + 16 * i, renderTickCounter, player, player.getEquippedStack(ARMOR_SLOTS[i]), 1);
             }
         } else {
             for (int i = 0; i < 4; i++) {
-                this.renderHotbarItem(drawContext, xPos +  16 * i, yPos + 3, renderTickCounter, player, player.getInventory().armor.get(3 - i), 1);
+                this.renderHotbarItem(drawContext, xPos +  16 * i, yPos + 3, renderTickCounter, player, player.getEquippedStack(ARMOR_SLOTS[i]), 1);
             }
         }
         RenderSystem.disableBlend();
@@ -99,15 +105,6 @@ public class InGameHudMixin {
     private void onRender(DrawContext drawContext, RenderTickCounter renderTickCounter, CallbackInfo ci) {
         CatClient.EVENTBUS.post(HudRenderEvent.get(drawContext.getMatrices(), renderTickCounter.getTickDelta(true)));
     }
-
-    //@Inject(method = "render", at = @At("RETURN"))
-    //public void changeGamma(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
-    //    if(CatClient.modManager().getMod(GeneralSettings.class).fullbright.isEnabled()) {
-    //        mc.options.getGamma().setValue(69420.0);
-    //    }else {
-    //        mc.options.getGamma().setValue(1.0);
-    //    }
-    //}
 
     @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
     public void renderStatusEffectOverlay(DrawContext drawContext, RenderTickCounter renderTickCounter, CallbackInfo ci) {
@@ -121,8 +118,6 @@ public class InGameHudMixin {
         if (!mc.options.getPerspective().isFirstPerson()) return;
 
         CrosshairMod mod = CatClient.modManager().getMod(CrosshairMod.class);
-        Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.pushMatrix();
         for (int row = 0; row < 11; row++) {
             for (int col = 0; col < 11; col++) {
                 if (mod.crosshair[row][col]) {
@@ -142,8 +137,6 @@ public class InGameHudMixin {
                 }
             }
         }
-        matrixStack.popMatrix();
-        RenderSystem.applyModelViewMatrix();
 
         AttackIndicator indicator = mc.options.getAttackIndicator().getValue();
         if (indicator == AttackIndicator.CROSSHAIR) {
@@ -160,17 +153,15 @@ public class InGameHudMixin {
             int x = (int) ((mc.getWindow().getScaledWidth()) / 2 - 8);
             int y = (int) ((mc.getWindow().getScaledHeight()) / 2 - 7 + 16);
 
-            //RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
             if (targetingEntity) {
-                drawContext.drawTexture(Identifier.of("textures/gui/icons.png"), x, y, 68, 94, 16, 16);
+                drawContext.drawTexture(net.minecraft.client.gl.RenderPipelines.GUI_TEXTURED, Identifier.of("textures/gui/icons.png"), x, y, 68f, 94f, 16, 16, 256, 256);
             } else if (progress < 1.0F) {
                 int k = (int) (progress * 17.0F);
-                drawContext.drawTexture(Identifier.of("textures/gui/icons.png"), x, y, 36, 94, 16, 4);
-                drawContext.drawTexture(Identifier.of("textures/gui/icons.png"), x, y, 52, 94, k, 4);
+                drawContext.drawTexture(net.minecraft.client.gl.RenderPipelines.GUI_TEXTURED, Identifier.of("textures/gui/icons.png"), x, y, 36f, 94f, 16, 4, 256, 256);
+                drawContext.drawTexture(net.minecraft.client.gl.RenderPipelines.GUI_TEXTURED, Identifier.of("textures/gui/icons.png"), x, y, 52f, 94f, k, 4, 256, 256);
             }
             RenderSystem.defaultBlendFunc();
         }
-        //matrices.pop();
     }
     private static void drawRectangle(DrawContext drawContext, int x, int y, int w, int h, int color) {
         drawContext.fill(x, y, x + w, y + h, color);

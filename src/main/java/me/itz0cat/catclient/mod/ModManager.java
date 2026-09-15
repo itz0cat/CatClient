@@ -122,15 +122,15 @@ public class ModManager {
 		if (MinecraftClient.getInstance().currentScreen instanceof ChatScreen)
 			return;
 
-		if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3))
+		if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_F3))
 			return;
 
 		//mods.stream().filter(m -> m.getKey() == event.key).forEach(Mod::toggle);
-		if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_BACKSPACE)) {
+		if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_BACKSPACE)) {
 			ModMenu.getInstance().search.clear();
 		}
 
-		if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), CatClient.modManager().getMod(GeneralSettings.class).openMenu.getKeyCode())) {
+		if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), CatClient.modManager().getMod(GeneralSettings.class).openMenu.getKeyCode())) {
 			if(!ModSettings.getInstance().isVisible && !SideMenu.getInstance().isVisible)
 				FirstMenu.toggle(!FirstMenu.getInstance().isVisible);
 		}
@@ -138,24 +138,24 @@ public class ModManager {
 
 		for(Mod mod : CatClient.modManager().getMods()) {
 			if(mod.isFocused) {
-				if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT)) {
-					if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT)) {
+				if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT)) {
+					if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT)) {
 						mod.updatedPos.x = 5;
-					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT)) {
+					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT)) {
 						mod.updatedPos.x = -5;
-					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_UP)) {
+					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_UP)) {
 						mod.updatedPos.y = -5;
-					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_DOWN)) {
+					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_DOWN)) {
 						mod.updatedPos.y = 5;
 					}
 				} else {
-					if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT)) {
+					if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT)) {
 						mod.updatedPos.x = 1;
-					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT)) {
+					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT)) {
 						mod.updatedPos.x = -1;
-					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_UP)) {
+					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_UP)) {
 						mod.updatedPos.y = -1;
-					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_DOWN)) {
+					} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_DOWN)) {
 						mod.updatedPos.y = 1;
 					}
 				}

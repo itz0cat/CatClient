@@ -35,7 +35,7 @@ public class Game {
     private static void screenTick() {
         if (mc.currentScreen instanceof LevelLoadingScreen) {
             setGameState(1);
-        } else if (mc.currentScreen instanceof ProgressScreen || mc.currentScreen instanceof ConnectScreen || mc.currentScreen instanceof DownloadingTerrainScreen) {
+        } else if (mc.currentScreen instanceof ProgressScreen || mc.currentScreen instanceof ConnectScreen || mc.currentScreen instanceof ReconfiguringScreen) {
             setGameState(2);
         } else  if (mc.currentScreen instanceof DisconnectedScreen) {
             setGameState(3);
@@ -47,7 +47,7 @@ public class Game {
     private static void screenTickFastLoad() {
         if (mc.currentScreen instanceof LevelLoadingScreen) {
             setGameState(1);
-        } else if (mc.currentScreen instanceof ProgressScreen || mc.currentScreen instanceof ConnectScreen || mc.currentScreen instanceof DownloadingTerrainScreen) {
+        } else if (mc.currentScreen instanceof ProgressScreen || mc.currentScreen instanceof ConnectScreen || mc.currentScreen instanceof ReconfiguringScreen) {
             setGameState(2);
         } else  if (mc.currentScreen instanceof DisconnectedScreen) {
             setGameState(3);
@@ -58,7 +58,7 @@ public class Game {
     }
 
     private static void screenChange(Screen lastScreen) {
-        if (isUpdate() && (lastScreen instanceof DisconnectedScreen || lastScreen instanceof LevelLoadingScreen || lastScreen instanceof ProgressScreen || lastScreen instanceof ConnectScreen || lastScreen instanceof ConfirmScreen || lastScreen instanceof DownloadingTerrainScreen)) {
+        if (isUpdate() && (lastScreen instanceof DisconnectedScreen || lastScreen instanceof LevelLoadingScreen || lastScreen instanceof ProgressScreen || lastScreen instanceof ConnectScreen || lastScreen instanceof ConfirmScreen || lastScreen instanceof ReconfiguringScreen)) {
             setUpdated(false);
         }
     }

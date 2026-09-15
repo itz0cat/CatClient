@@ -1,6 +1,5 @@
 package me.itz0cat.catclient.mixin;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.itz0cat.catclient.menu.MainMenuButtons;
 import net.minecraft.client.MinecraftClient;
@@ -22,8 +21,6 @@ import javax.swing.*;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import static net.minecraft.util.math.ColorHelper.Abgr.withAlpha;
-
 @Mixin(SplashOverlay.class)
 public abstract class SplashScreenMixin extends Overlay {
     @Shadow
@@ -40,8 +37,8 @@ public abstract class SplashScreenMixin extends Overlay {
     public void render(DrawContext drawContext, int i, int j, float f, CallbackInfo ci) {
         //LOGO =  Identifier.of("catclient","icon.png");
         Identifier BG = Identifier.of("catclient", "waves.png");
-        MOJANG_RED = ColorHelper.Argb.getArgb(255, 30, 30, 46);
-        MONOCHROME_BLACK = ColorHelper.Argb.getArgb(255, 30, 30, 46);
+        MOJANG_RED = ColorHelper.getArgb(255, 30, 30, 46);
+        MONOCHROME_BLACK = ColorHelper.getArgb(255, 30, 30, 46);
         if (this.reloadCompleteTime > 1) {
             this.client.setOverlay(null);
             MainMenuButtons.reloadComplete = true;

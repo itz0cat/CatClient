@@ -1,13 +1,12 @@
 package me.itz0cat.catclient.mod.mods;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.itz0cat.catclient.api.font.JColor;
 import me.itz0cat.catclient.mod.Mod;
 import me.itz0cat.catclient.mod.setting.settings.BooleanSetting;
 import me.itz0cat.catclient.mod.setting.settings.ColorSetting;
 import me.itz0cat.catclient.mod.setting.settings.NumberSetting;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
@@ -43,10 +42,10 @@ public class BlockOverlayMod extends Mod {
 
     public BlockOverlayMod() {
         super("Block Overlay", "Custom animated block selection highlight.", "\uF1B2");
-        WorldRenderEvents.BLOCK_OUTLINE.register(this::onBlockOutline);
+        WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register(this::onBlockOutline);
     }
 
-    private boolean onBlockOutline(WorldRenderContext context, WorldRenderContext.BlockOutlineContext outlineContext) {
+    private boolean onBlockOutline(WorldRenderContext context, Object outlineContext) {
         if (!isEnabled()) {
             return true;
         }
@@ -115,16 +114,16 @@ public class BlockOverlayMod extends Mod {
             lastPos = pos;
         }
 
-        renderCustomOutline(context.matrixStack(), mc.gameRenderer.getCamera());
+        renderCustomOutline(context, mc.gameRenderer.getCamera());
         return false;
     }
 
-    private void renderCustomOutline(MatrixStack matrices, Camera camera) {
+    private void renderCustomOutline(WorldRenderContext context, Camera camera) {
         if (animProgress < 0.01f) return;
 
-        double camX = camera.getPos().x;
-        double camY = camera.getPos().y;
-        double camZ = camera.getPos().z;
+        double camX = camera.getCameraPos().x;
+        double camY = camera.getCameraPos().y;
+        double camZ = camera.getCameraPos().z;
 
         float drawX = (float) (animX - camX);
         float drawY = (float) (animY - camY);
@@ -133,41 +132,21 @@ public class BlockOverlayMod extends Mod {
         int outColor = rainbowOutline.isEnabled() ? getRainbowColor(1.0f) : outlineColor.getColor().getRGB();
         int fColor = rainbowFill.isEnabled() ? (0x40 << 24) | (getRainbowColor(0.25f) & 0x00FFFFFF) : fillColor.getColor().getRGB();
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        if (ignoreDepth.isEnabled()) {
-            RenderSystem.disableDepthTest();
-        } else {
-            RenderSystem.enableDepthTest();
-        }
-
-        net.minecraft.client.render.Tessellator tessellator = net.minecraft.client.render.Tessellator.getInstance();
-
+        MatrixStack matrices = context.matrices();
         matrices.push();
         matrices.translate(drawX, drawY, drawZ);
 
         if (enableFill.isEnabled()) {
-            RenderSystem.setShader(net.minecraft.client.render.GameRenderer::getPositionColorProgram);
-            net.minecraft.client.render.BufferBuilder buffer = tessellator.begin(net.minecraft.client.render.VertexFormat.DrawMode.QUADS, net.minecraft.client.render.VertexFormats.POSITION_COLOR);
-            drawBoxFill(matrices, buffer, animW, animH, animD, fColor);
-            net.minecraft.client.render.BufferRenderer.drawWithGlobalProgram(buffer.end());
+            VertexConsumer fillBuffer = context.consumers().getBuffer(net.minecraft.client.render.RenderLayers.debugQuads());
+            drawBoxFill(matrices, fillBuffer, animW, animH, animD, fColor);
         }
 
         if (enableOutline.isEnabled()) {
-            RenderSystem.setShader(net.minecraft.client.render.GameRenderer::getRenderTypeLinesProgram);
-            RenderSystem.lineWidth((float) outlineThickness.getValue());
-            net.minecraft.client.render.BufferBuilder buffer = tessellator.begin(net.minecraft.client.render.VertexFormat.DrawMode.DEBUG_LINES, net.minecraft.client.render.VertexFormats.LINES);
-            drawBoxOutline(matrices, buffer, animW, animH, animD, outColor);
-            net.minecraft.client.render.BufferRenderer.drawWithGlobalProgram(buffer.end());
-            RenderSystem.lineWidth(1.0f);
+            VertexConsumer lineBuffer = context.consumers().getBuffer(net.minecraft.client.render.RenderLayers.lines());
+            drawBoxOutline(matrices, lineBuffer, animW, animH, animD, outColor);
         }
 
         matrices.pop();
-
-        if (ignoreDepth.isEnabled()) {
-            RenderSystem.enableDepthTest();
-        }
-        RenderSystem.disableBlend();
     }
 
     private int getRainbowColor(float saturation) {

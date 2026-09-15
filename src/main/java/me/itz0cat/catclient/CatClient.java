@@ -13,7 +13,7 @@ import me.itz0cat.catclient.mod.ModManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ public final class CatClient implements ModInitializer {
 		EVENTBUS.subscribe(modManager);
 		EVENTBUS.subscribe(MainMenuButtons.class);
 		EVENTBUS.subscribe(CPSHelper.class);
-		WorldRenderEvents.END.register((context) -> { EVENTBUS.post(WorldRenderEvent.get(context)); });
+		WorldRenderEvents.END_MAIN.register((context) -> { EVENTBUS.post(WorldRenderEvent.get(context)); });
 
 		MainMenuButtons.toggleVisibility();
 		FirstMenu.toggleVisibility();

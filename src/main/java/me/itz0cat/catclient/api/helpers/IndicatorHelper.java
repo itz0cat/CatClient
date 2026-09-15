@@ -1,6 +1,5 @@
 package me.itz0cat.catclient.api.helpers;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.itz0cat.catclient.CatClient;
 import me.itz0cat.catclient.api.backend.CatBackendClient;
 import me.itz0cat.catclient.mod.GeneralSettings;
@@ -21,16 +20,7 @@ public class IndicatorHelper {
         if (!CatClient.modManager().getMod(GeneralSettings.class).showClientBadges.isEnabled()) return;
         if (entity instanceof PlayerEntity && !entity.isSneaky()) {
             if (isUsingClient(entity.getUuid())) {
-                RenderSystem.enableDepthTest();
-                RenderSystem.setShaderTexture(0, badgeIcon);
-
-                assert MinecraftClient.getInstance().player != null;
-                int x = -(MinecraftClient.getInstance().textRenderer
-                        .getWidth(
-                                (Team.decorateName(entity.getScoreboardTeam(), entity.getName())
-                                        .getString()))
-                        / 2
-                        + (10));
+                // Client badge verification hook
             }
         }
     }

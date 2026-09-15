@@ -80,6 +80,5 @@ public class JColor extends Color {
     }
 
     public void glColor() {
-        GlStateManager._clearColor(getRed() / 255.0f, getGreen() / 255.0f, getBlue() / 255.0f, getAlpha() / 255.0f);
     }
 }

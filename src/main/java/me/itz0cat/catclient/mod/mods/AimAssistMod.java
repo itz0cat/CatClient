@@ -10,9 +10,8 @@ import me.itz0cat.catclient.mod.setting.settings.BooleanSetting;
 import me.itz0cat.catclient.mod.setting.settings.ColorSetting;
 import me.itz0cat.catclient.mod.setting.settings.ModeSetting;
 import me.itz0cat.catclient.mod.setting.settings.NumberSetting;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.minecraft.client.MinecraftClient;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -237,25 +236,17 @@ public class AimAssistMod extends Mod {
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc.player == null) return;
 
-        MatrixStack matrices = context.matrixStack();
-        Camera camera = context.camera();
+        MatrixStack matrices = context.matrices();
+        Camera camera = context.gameRenderer().getCamera();
 
-        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
-        com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();
-        com.mojang.blaze3d.systems.RenderSystem.disableDepthTest();
-
-        net.minecraft.client.render.Tessellator tessellator = net.minecraft.client.render.Tessellator.getInstance();
-        com.mojang.blaze3d.systems.RenderSystem.setShader(net.minecraft.client.render.GameRenderer::getRenderTypeLinesProgram);
-        com.mojang.blaze3d.systems.RenderSystem.lineWidth(2.0f);
-
-        net.minecraft.client.render.BufferBuilder buffer = tessellator.begin(net.minecraft.client.render.VertexFormat.DrawMode.DEBUG_LINES, net.minecraft.client.render.VertexFormats.LINES);
+        VertexConsumer buffer = context.consumers().getBuffer(net.minecraft.client.render.RenderLayers.lines());
 
         JColor c = targetColor.getColor();
         int r = c.getRed();
         int g = c.getGreen();
         int b = c.getBlue();
 
-        Box box = currentTarget.getBoundingBox().offset(-camera.getPos().x, -camera.getPos().y, -camera.getPos().z).expand(0.05);
+        Box box = currentTarget.getBoundingBox().offset(-camera.getCameraPos().x, -camera.getCameraPos().y, -camera.getCameraPos().z).expand(0.05);
 
         addLine(buffer, matrices.peek(), box.minX, box.minY, box.minZ, box.maxX, box.minY, box.minZ, r, g, b, 255);
         addLine(buffer, matrices.peek(), box.maxX, box.minY, box.minZ, box.maxX, box.minY, box.maxZ, r, g, b, 255);
@@ -271,12 +262,6 @@ public class AimAssistMod extends Mod {
         addLine(buffer, matrices.peek(), box.maxX, box.minY, box.minZ, box.maxX, box.maxY, box.minZ, r, g, b, 255);
         addLine(buffer, matrices.peek(), box.maxX, box.minY, box.maxZ, box.maxX, box.maxY, box.maxZ, r, g, b, 255);
         addLine(buffer, matrices.peek(), box.minX, box.minY, box.maxZ, box.minX, box.maxY, box.maxZ, r, g, b, 255);
-
-        net.minecraft.client.render.BufferRenderer.drawWithGlobalProgram(buffer.end());
-        com.mojang.blaze3d.systems.RenderSystem.lineWidth(1.0f);
-
-        com.mojang.blaze3d.systems.RenderSystem.enableDepthTest();
-        com.mojang.blaze3d.systems.RenderSystem.disableBlend();
     }
 
     private void addLine(VertexConsumer consumer, MatrixStack.Entry entry, double x1, double y1, double z1, double x2, double y2, double z2, int r, int g, int b, int a) {
@@ -286,7 +271,7 @@ public class AimAssistMod extends Mod {
 
     private float[] getNeededRotations(Vec3d vec) {
         MinecraftClient mc = MinecraftClient.getInstance();
-        Vec3d eyes = mc.player.getPos().add(0, mc.player.getStandingEyeHeight(), 0);
+        Vec3d eyes = mc.player.getEyePos();
 
         double diffX = vec.x - eyes.x;
         double diffZ = vec.z - eyes.z;

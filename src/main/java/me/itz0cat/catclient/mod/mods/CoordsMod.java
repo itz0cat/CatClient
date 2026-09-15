@@ -143,17 +143,17 @@ public class CoordsMod extends Mod implements Renderable {
                 if(direction.isEnabled()) UI.shadowText(dirString, 24, c[0], c[1], c[2], 1f);
                 ImGui.setCursorPos(oldPos.x, oldPos.y);
 
-                UI.shadowText(" X: " + MathHelper.round(mc.player.getPos().x, 1), 24, c[0], c[1], c[2], 1f);
+                UI.shadowText(" X: " + MathHelper.round(mc.player.getX(), 1), 24, c[0], c[1], c[2], 1f);
 
                 oldPos = ImGui.getCursorPos();
                 ImGui.setCursorPosX(width.getFValue() * scale.getFValue() - 4 - nameWidth);
                 if(direction.isEnabled()) UI.shadowText(nameString, 24, c[0], c[1], c[2], 1f);
                 ImGui.setCursorPos(oldPos.x, oldPos.y);
 
-                UI.shadowText(" Y: " + MathHelper.round(mc.player.getPos().y, 1), 24, c[0], c[1], c[2], 1f);
-                UI.shadowText(" Z: " + MathHelper.round(mc.player.getPos().z, 1), 24, c[0], c[1], c[2], 1f);
+                UI.shadowText(" Y: " + MathHelper.round(mc.player.getY(), 1), 24, c[0], c[1], c[2], 1f);
+                UI.shadowText(" Z: " + MathHelper.round(mc.player.getZ(), 1), 24, c[0], c[1], c[2], 1f);
                 String biomeString =
-                        mc.world.getBiome(new BlockPos((int) mc.player.getPos().x, (int) mc.player.getPos().y, (int) mc.player.getPos().z)).getKey().get().getValue().getPath();
+                        mc.world.getBiome(mc.player.getBlockPos()).getKey().get().getValue().getPath();
                 biomeString = biomeString.replaceAll("_", " ");
                 biomeString = WordUtils.capitalize(biomeString);
                 if (biome.isEnabled())
@@ -165,17 +165,17 @@ public class CoordsMod extends Mod implements Renderable {
                 if(direction.isEnabled()) ImGui.text(dirString);
                 ImGui.setCursorPos(oldPos.x, oldPos.y);
 
-                ImGui.text(" X: " + MathHelper.round(mc.player.getPos().x, 1));
+                ImGui.text(" X: " + MathHelper.round(mc.player.getX(), 1));
 
                 oldPos = ImGui.getCursorPos();
                 ImGui.setCursorPosX(width.getFValue() * scale.getFValue() - 4 - nameWidth);
                 if(direction.isEnabled()) ImGui.text(nameString);
                 ImGui.setCursorPos(oldPos.x, oldPos.y);
 
-                ImGui.text(" Y: " + MathHelper.round(mc.player.getPos().y, 1));
-                ImGui.text(" Z: " + MathHelper.round(mc.player.getPos().z, 1));
+                ImGui.text(" Y: " + MathHelper.round(mc.player.getY(), 1));
+                ImGui.text(" Z: " + MathHelper.round(mc.player.getZ(), 1));
                 String biomeString =
-                        mc.world.getBiome(new BlockPos((int) mc.player.getPos().x, (int) mc.player.getPos().y, (int) mc.player.getPos().z)).getKey().get().getValue().getPath();
+                        mc.world.getBiome(mc.player.getBlockPos()).getKey().get().getValue().getPath();
                 biomeString = biomeString.replaceAll("_", " ");
                 biomeString = WordUtils.capitalize(biomeString);
                 if (biome.isEnabled())

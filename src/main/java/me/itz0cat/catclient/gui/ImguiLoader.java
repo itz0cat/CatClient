@@ -116,11 +116,11 @@ public class ImguiLoader {
 
         // User render code
         for (Renderable renderable : renderstack) {
-            MinecraftClient.getInstance().getProfiler().push("ImGui Render " + renderable.getName());
+            net.minecraft.util.profiler.Profilers.get().push("ImGui Render " + renderable.getName());
             renderable.getTheme().preRender();
             renderable.render();
             renderable.getTheme().postRender();
-            MinecraftClient.getInstance().getProfiler().pop();
+            net.minecraft.util.profiler.Profilers.get().pop();
         }
         // End of user code
 

@@ -1,6 +1,6 @@
 package me.itz0cat.catclient.api.event.events;
 
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 
 @SuppressWarnings("all")
 public class WorldRenderEvent {

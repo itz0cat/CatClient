@@ -176,7 +176,7 @@ public class ToggleSprintMod extends Mod implements Renderable {
 
     @EventHandler
     public void onKey(KeyPressEvent e) {
-        if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), mc.options.sprintKey.getDefaultKey().getCode())) {
+        if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), mc.options.sprintKey.getDefaultKey().getCode())) {
             toggled = !toggled;
         }
     }
