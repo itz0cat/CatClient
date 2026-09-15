@@ -61,7 +61,10 @@ jobs:
           fi
           echo "Selected jar: $MAIN_JAR"
           cp "$MAIN_JAR" dist/CatClient-1.21.11.jar
-          gh release create latest dist/CatClient-1.21.11.jar \
-            --title "CatClient 1.21.11" \
-            --notes "Universal build for Minecraft 1.21.11, Fabric Loader 0.19.5, and Java 21." \
-            --clobber || gh release upload latest dist/CatClient-1.21.11.jar --clobber
+          if gh release view latest >/dev/null 2>&1; then
+            gh release upload latest dist/CatClient-1.21.11.jar --clobber
+          else
+            gh release create latest dist/CatClient-1.21.11.jar \
+              --title "CatClient 1.21.11" \
+              --notes "Universal build for Minecraft 1.21.11, Fabric Loader 0.19.5, and Java 21."
+          fi
