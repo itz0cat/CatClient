@@ -36,6 +36,12 @@ public class ArmorMod extends Mod implements Renderable {
     public final ModeSetting direction = new ModeSetting("Direction", this, "Vertical", "Vertical", "Horizontal");
 
     public boolean firstFrame = true;
+    private static final net.minecraft.entity.EquipmentSlot[] ARMOR_SLOTS = new net.minecraft.entity.EquipmentSlot[] {
+        net.minecraft.entity.EquipmentSlot.HEAD,
+        net.minecraft.entity.EquipmentSlot.CHEST,
+        net.minecraft.entity.EquipmentSlot.LEGS,
+        net.minecraft.entity.EquipmentSlot.FEET
+    };
     //public ImVec2 position = new ImVec2(82, 200);
     public ArmorMod() {
         super("Armor Status", "Shows your armor status.", "\uF132");
@@ -120,12 +126,14 @@ public class ArmorMod extends Mod implements Renderable {
             } else if (fontSetting.is("Mono")) {
                 font = ImguiLoader.getMonoFont18();
             }
+
             for (int i = 0; i < 4; i++) {
-                String text = mc.player.getInventory().armor.get(3 - i).getDamage() != 0 ?
+                net.minecraft.item.ItemStack armorStack = mc.player.getEquippedStack(ARMOR_SLOTS[i]);
+                String text = armorStack.getDamage() != 0 ?
 
                         (duraMode.getMode().equals("Numbers") ?
-                                mc.player.getInventory().armor.get(3 - i).getMaxDamage() - mc.player.getInventory().armor.get(3 - i).getDamage() + "" :
-                                (100 - (mc.player.getInventory().armor.get(3 - i).getMaxDamage() / 100 * mc.player.getInventory().armor.get(3 - i).getDamage())) + "%")
+                                armorStack.getMaxDamage() - armorStack.getDamage() + "" :
+                                (100 - (armorStack.getMaxDamage() / 100 * armorStack.getDamage())) + "%")
 
                         : " ";
 

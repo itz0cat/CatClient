@@ -2,7 +2,6 @@ package me.itz0cat.catclient.api.font;
 
 import java.awt.Color;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.itz0cat.catclient.CatClient;
 import me.itz0cat.catclient.mod.GeneralSettings;
 

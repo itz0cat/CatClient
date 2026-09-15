@@ -12,6 +12,7 @@ import me.itz0cat.catclient.mod.setting.settings.ModeSetting;
 import me.itz0cat.catclient.mod.setting.settings.NumberSetting;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -92,8 +93,8 @@ public class AimAssistMod extends Mod {
         if (clickOnly.isEnabled() && !mc.options.attackKey.isPressed()) return;
 
         if (weaponOnly.isEnabled()) {
-            net.minecraft.item.Item mainHand = mc.player.getMainHandStack().getItem();
-            if (!(mainHand instanceof net.minecraft.item.SwordItem) && !(mainHand instanceof net.minecraft.item.AxeItem)) {
+            net.minecraft.item.ItemStack mainHand = mc.player.getMainHandStack();
+            if (!mainHand.isIn(net.minecraft.registry.tag.ItemTags.SWORDS) && !mainHand.isIn(net.minecraft.registry.tag.ItemTags.AXES)) {
                 lockedTarget = null;
                 return;
             }
