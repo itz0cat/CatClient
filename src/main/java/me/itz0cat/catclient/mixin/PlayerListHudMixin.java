@@ -31,17 +31,15 @@ public abstract class PlayerListHudMixin {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Lnet/minecraft/text/StringVisitable;)I"))
     public int getWidth(TextRenderer instance, StringVisitable text) {
-        if (profile != null && IndicatorHelper.isUsingClient(profile.getId()))
+        if (profile != null && IndicatorHelper.isUsingClient(profile.id()))
             return instance.getWidth(text) + 10;
         return instance.getWidth(text);
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)V"))
     public void drawTextWithShadow(DrawContext instance, TextRenderer textRenderer, Text text, int i, int j, int k) {
-        if (profile != null && IndicatorHelper.isUsingClient(profile.getId())) {
-            RenderSystem.setShaderTexture(0, IndicatorHelper.badgeIcon);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            instance.drawTexture(IndicatorHelper.badgeIcon, i, j, 8, 8, 0, 0, 8, 8, 8, 8);
+        if (profile != null && IndicatorHelper.isUsingClient(profile.id())) {
+            instance.drawTexture(net.minecraft.client.gl.RenderPipelines.GUI_TEXTURED, IndicatorHelper.badgeIcon, i, j, 0f, 0f, 8, 8, 8, 8);
             i += 9;
         }
         profile = null;

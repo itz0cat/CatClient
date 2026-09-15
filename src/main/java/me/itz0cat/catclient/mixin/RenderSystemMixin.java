@@ -17,8 +17,8 @@ public class RenderSystemMixin {
     @Inject(at = @At("HEAD"), method = "flipFrame", remap = false)
     private static void runTickTail(CallbackInfo ci) {
         CatClient.EVENTBUS.post(RenderTickEvent.get());
-        MinecraftClient.getInstance().getProfiler().push("ImGui Render");
+        net.minecraft.util.profiler.Profilers.get().push("ImGui Render");
         ImguiLoader.onFrameRender();
-        MinecraftClient.getInstance().getProfiler().pop();
+        net.minecraft.util.profiler.Profilers.get().pop();
     }
 }

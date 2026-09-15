@@ -14,6 +14,6 @@ import static me.itz0cat.catclient.CatClient.mc;
 public abstract class InventoryScreenMixin {
     @Inject(method = "render", at = @At("TAIL"))
     public void render(DrawContext drawContext, int i, int j, float f, CallbackInfo ci) {
-        drawContext.drawTexture(Identifier.of("catclient", "cattext.png"), 0, mc.getWindow().getScaledHeight() - 32, 0, 0, 167, 28, 167, 28);
+        drawContext.drawTexture(net.minecraft.client.gl.RenderPipelines.GUI_TEXTURED, Identifier.of("catclient", "cattext.png"), 0, mc.getWindow().getScaledHeight() - 32, 0f, 0f, 167, 28, 167, 28);
     }
 }

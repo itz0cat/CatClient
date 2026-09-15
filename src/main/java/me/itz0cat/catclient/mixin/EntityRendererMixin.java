@@ -41,7 +41,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
                 int j = "deadmau5".equals(text.getString()) ? -10 : 0;
                 matrixStack.push();
                 matrixStack.translate(vec3d.x, vec3d.y + 0.5, vec3d.z);
-                matrixStack.multiply(this.dispatcher.getRotation());
+                matrixStack.multiply(MinecraftClient.getInstance().gameRenderer.getCamera().getRotation());
                 matrixStack.scale(0.025F, -0.025F, 0.025F);
                 Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
                 float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);

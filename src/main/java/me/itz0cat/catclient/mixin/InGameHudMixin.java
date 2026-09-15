@@ -87,8 +87,6 @@ public class InGameHudMixin {
         PlayerEntity player = this.getCameraPlayer();
         int xPos = (int) (mod.position.x / mc.options.getGuiScale().getValue());
         int yPos = (int) (mod.position.y / mc.options.getGuiScale().getValue());
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         if(mod.direction.getMode().equals("Vertical")) {
             for (int i = 0; i < 4; i++) {
                 this.renderHotbarItem(drawContext, xPos + 3, yPos + 16 * i, renderTickCounter, player, player.getEquippedStack(ARMOR_SLOTS[i]), 1);
@@ -98,12 +96,11 @@ public class InGameHudMixin {
                 this.renderHotbarItem(drawContext, xPos +  16 * i, yPos + 3, renderTickCounter, player, player.getEquippedStack(ARMOR_SLOTS[i]), 1);
             }
         }
-        RenderSystem.disableBlend();
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     private void onRender(DrawContext drawContext, RenderTickCounter renderTickCounter, CallbackInfo ci) {
-        CatClient.EVENTBUS.post(HudRenderEvent.get(drawContext.getMatrices(), renderTickCounter.getTickDelta(true)));
+        CatClient.EVENTBUS.post(HudRenderEvent.get(drawContext.getMatrices(), renderTickCounter.getTickProgress(true)));
     }
 
     @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
@@ -160,7 +157,6 @@ public class InGameHudMixin {
                 drawContext.drawTexture(net.minecraft.client.gl.RenderPipelines.GUI_TEXTURED, Identifier.of("textures/gui/icons.png"), x, y, 36f, 94f, 16, 4, 256, 256);
                 drawContext.drawTexture(net.minecraft.client.gl.RenderPipelines.GUI_TEXTURED, Identifier.of("textures/gui/icons.png"), x, y, 52f, 94f, k, 4, 256, 256);
             }
-            RenderSystem.defaultBlendFunc();
         }
     }
     private static void drawRectangle(DrawContext drawContext, int x, int y, int w, int h, int color) {
