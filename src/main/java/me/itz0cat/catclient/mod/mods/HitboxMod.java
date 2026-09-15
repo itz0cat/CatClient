@@ -3,8 +3,7 @@ package me.itz0cat.catclient.mod.mods;
 import me.itz0cat.catclient.api.event.events.TickEvent;
 import me.itz0cat.catclient.api.event.orbit.EventHandler;
 import me.itz0cat.catclient.api.font.JColor;
-import me.itz0cat.catclient.mixin.EntityRenderDispatcherAccessor;
-import me.itz0cat.catclient.mixin.EntityRenderDispatcherMixin;
+
 import me.itz0cat.catclient.mod.Mod;
 import me.itz0cat.catclient.mod.setting.settings.BooleanSetting;
 import me.itz0cat.catclient.mod.setting.settings.ColorSetting;

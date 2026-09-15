@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(ClientWorld.class)
 public abstract class ClientWorldMixin {
-    @ModifyArg(method = "setTimeOfDay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld$Properties;setTimeOfDay(J)V"))
-    public long setTimeOfDay(long time) {
+    @ModifyArg(method = "setTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld$Properties;setTimeOfDay(J)V"))
+    public long setTime(long time) {
         if (CatClient.modManager().getMod(TimeChangerMod.class).isEnabled())
             return CatClient.modManager().getMod(TimeChangerMod.class).getTimeInt();
         else

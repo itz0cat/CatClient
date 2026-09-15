@@ -1,16 +1,16 @@
 package me.itz0cat.catclient.api.event.events;
 
-import net.minecraft.client.util.math.MatrixStack;
+import org.joml.Matrix3x2fStack;
 
 @SuppressWarnings("all")
 public class HudRenderEvent {
 
 	private static final HudRenderEvent INSTANCE = new HudRenderEvent();
 
-	public MatrixStack matrices;
+	public Matrix3x2fStack matrices;
 	public float tickDelta;
 
-	public static HudRenderEvent get(MatrixStack matrices, float tickDelta) {
+	public static HudRenderEvent get(Matrix3x2fStack matrices, float tickDelta) {
 		INSTANCE.matrices = matrices;
 		INSTANCE.tickDelta = tickDelta;
 		return INSTANCE;

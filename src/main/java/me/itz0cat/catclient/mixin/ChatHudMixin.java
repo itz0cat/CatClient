@@ -73,9 +73,12 @@ public abstract class ChatHudMixin implements IChatHudExt {
         this.clear(false);
     }
 
-    @Inject(method = "render", at = @At("HEAD"))
-    private void render(DrawContext drawContext, int i, int j, int k, boolean bl, CallbackInfo ci) {
-        if(CatClient.modManager().getMod(GeneralSettings.class).unlimitedChatHistory.isEnabled()) MAX_MESSAGES = 16384;
-        else MAX_MESSAGES = 100;
+    @Inject(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V", at = @At("HEAD"))
+    private void updateMaxMessages(Text message, MessageSignatureData signatureData, MessageIndicator indicator, CallbackInfo ci) {
+        if (CatClient.modManager().getMod(GeneralSettings.class).unlimitedChatHistory.isEnabled()) {
+            MAX_MESSAGES = 16384;
+        } else {
+            MAX_MESSAGES = 100;
+        }
     }
 }

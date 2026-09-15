@@ -36,8 +36,8 @@ public abstract class PlayerListHudMixin {
         return instance.getWidth(text);
     }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
-    public int drawTextWithShadow(DrawContext instance, TextRenderer textRenderer, Text text, int i, int j, int k) {
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)V"))
+    public void drawTextWithShadow(DrawContext instance, TextRenderer textRenderer, Text text, int i, int j, int k) {
         if (profile != null && IndicatorHelper.isUsingClient(profile.getId())) {
             RenderSystem.setShaderTexture(0, IndicatorHelper.badgeIcon);
             RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -45,7 +45,7 @@ public abstract class PlayerListHudMixin {
             i += 9;
         }
         profile = null;
-        return instance.drawTextWithShadow(textRenderer, text, i, j, k);
+        instance.drawTextWithShadow(textRenderer, text, i, j, k);
     }
 
     @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;getPlayerName(Lnet/minecraft/client/network/PlayerListEntry;)Lnet/minecraft/text/Text;"))
@@ -63,14 +63,9 @@ public abstract class PlayerListHudMixin {
             pingString = shiftPing(pingString);
             if(CatClient.modManager().getMod(GeneralSettings.class).msPing.isEnabled()) pingString = pingString + "ms";
 
-            drawContext.getMatrices().push();
-            drawContext.getMatrices().translate(0, 0, 100);
-
             drawContext.drawTextWithShadow(mc.textRenderer, pingString,
                     j + i - mc.textRenderer.getWidth(pingString) - 1, k - (CatClient.modManager().getMod(GeneralSettings.class).smallPing.isEnabled() ? 2 : 0),
                     getPingColour(playerListEntry.getLatency()));
-
-            drawContext.getMatrices().pop();
         }
     }
 
