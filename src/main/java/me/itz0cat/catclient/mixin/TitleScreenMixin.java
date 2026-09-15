@@ -28,11 +28,8 @@ public abstract class TitleScreenMixin {
 
     @Inject(method = "render", at = @At("TAIL"))
     protected void renderLogo(DrawContext drawContext, int i, int j, float f, CallbackInfo ci) {
-        drawContext.drawTexture(Identifier.of("catclient", "icon.png"), 200, 200, 0, 0, 0, 0);
-
         int size = 256 / (int) mc.getWindow().getScaleFactor();
-
-        drawContext.drawTexture(Identifier.of("catclient", "icon.png"), 50 / (int) mc.getWindow().getScaleFactor(), 50 / (int) mc.getWindow().getScaleFactor(), 0, 0, size, size, size, size);
+        drawContext.drawTexture(net.minecraft.client.gl.RenderPipelines.GUI_TEXTURED, Identifier.of("catclient", "icon.png"), 50 / (int) mc.getWindow().getScaleFactor(), 50 / (int) mc.getWindow().getScaleFactor(), 0f, 0f, size, size, size, size);
     }
 
     @Inject(method = "init", at = @At("TAIL"))

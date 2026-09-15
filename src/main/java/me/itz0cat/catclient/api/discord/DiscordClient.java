@@ -84,38 +84,38 @@ public class DiscordClient {
             if(mc.world == null || mc.player == null){
                 if(Game.getGameState() == 1) {
                     DiscordRichPresence presence = new DiscordRichPresence();
-                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().getName();
+                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().name();
                     presence.state = "Loading game";
                     DiscordClient.updateDiscordPresence(presence);
                 }
                 else if(Game.getGameState() == 2) {
                     DiscordRichPresence presence = new DiscordRichPresence();
-                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().getName();
+                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().name();
                     presence.state = "Connecting to a server";
                     DiscordClient.updateDiscordPresence(presence);
                 }
                 else if(Game.getGameState() == 3) {
                     DiscordRichPresence presence = new DiscordRichPresence();
-                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().getName();
+                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().name();
                     presence.state = "Disconnected from a server";
                     DiscordClient.updateDiscordPresence(presence);
                 }
                 else {
                     DiscordRichPresence presence = new DiscordRichPresence();
-                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().getName();
+                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().name();
                     presence.state = "In the main menu";
                     DiscordClient.updateDiscordPresence(presence);
                 }
             } else {
                 if(mc.isInSingleplayer()) {
                     DiscordRichPresence presence = new DiscordRichPresence();
-                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().getName();
+                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().name();
                     presence.state = "Singleplayer";
                     DiscordClient.updateDiscordPresence(presence);
                 }
                 else if(mc.getCurrentServerEntry() != null) {
                     DiscordRichPresence presence = new DiscordRichPresence();
-                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().getName();
+                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().name();
                     if(CatClient.modManager().getMod(GeneralSettings.class).showAddress.isEnabled()) {
                         presence.state = mc.getCurrentServerEntry().address;
                     } else {
@@ -125,7 +125,7 @@ public class DiscordClient {
                 }
                 else {
                     DiscordRichPresence presence = new DiscordRichPresence();
-                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().getName();
+                    presence.details = "Playing Minecraft " + SharedConstants.getGameVersion().name();
                     presence.state = "In the main menu";
                     DiscordClient.updateDiscordPresence(presence);
                 }

@@ -126,10 +126,10 @@ public class CoordsMod extends Mod implements Renderable {
             }
 
             String nameString = "";
-            if(mc.player.getHorizontalFacing().getName().equals("east")) nameString = "E";
-            if(mc.player.getHorizontalFacing().getName().equals("west")) nameString = "W";
-            if(mc.player.getHorizontalFacing().getName().equals("south")) nameString = "S";
-            if(mc.player.getHorizontalFacing().getName().equals("north")) nameString = "N";
+            if(mc.player.getHorizontalFacing().asString().equals("east")) nameString = "E";
+            if(mc.player.getHorizontalFacing().asString().equals("west")) nameString = "W";
+            if(mc.player.getHorizontalFacing().asString().equals("south")) nameString = "S";
+            if(mc.player.getHorizontalFacing().asString().equals("north")) nameString = "N";
 
             float nameWidth = ImGui.calcTextSize(nameString).x;
             float dirWidth = ImGui.calcTextSize(dirString).x;
