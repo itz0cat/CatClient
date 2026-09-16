@@ -3,17 +3,21 @@ package me.itz0cat.catclient.ui;
 import me.itz0cat.catclient.CatClient;
 import me.itz0cat.catclient.api.font.JColor;
 import me.itz0cat.catclient.api.util.KeyUtils;
+import me.itz0cat.catclient.hud.HudRenderer;
 import me.itz0cat.catclient.mod.Category;
 import me.itz0cat.catclient.mod.Mod;
 import me.itz0cat.catclient.mod.setting.Setting;
 import me.itz0cat.catclient.mod.setting.settings.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +126,7 @@ public class CatClientScreen extends Screen {
 
         // Header bar
         context.fill(0, 0, width, 32, 0xDD0A0F1F);
-        context.drawBorder(0, 0, width, 32, 0xFF00D2FF);
+        HudRenderer.drawBorder(context, 0, 0, width, 32, 0xFF00D2FF);
 
         // Header Title
         context.drawText(textRenderer, "CatClient", 12, 11, 0xFF00D2FF, true);
@@ -137,7 +141,7 @@ public class CatClientScreen extends Screen {
         int sideY = 36;
         for (int i = 0; i < categories.length; i++) {
             if (categories[i] == currentCategory && selectedModSettings == null) {
-                context.drawBorder(9, sideY + (i * 26) - 1, 92, 24, 0xFF00D2FF);
+                HudRenderer.drawBorder(context, 9, sideY + (i * 26) - 1, 92, 24, 0xFF00D2FF);
             }
         }
 
@@ -177,7 +181,7 @@ public class CatClientScreen extends Screen {
                 // Card background
                 int bgCol = hovered ? 0xFF141C30 : 0xFF0E1524;
                 context.fill(contentX, curY, contentX + contentW, curY + cardH, bgCol);
-                context.drawBorder(contentX, curY, contentW, cardH, mod.isEnabled() ? 0xFF00D2FF : 0xFF2A354A);
+                HudRenderer.drawBorder(context, contentX, curY, contentW, cardH, mod.isEnabled() ? 0xFF00D2FF : 0xFF2A354A);
 
                 // Mod Name & description
                 context.drawText(textRenderer, mod.getName(), contentX + 8, curY + 6, mod.isEnabled() ? 0xFF00D2FF : 0xFFEEEEEE, false);
@@ -203,7 +207,7 @@ public class CatClientScreen extends Screen {
                     int gearY = toggleY;
                     boolean gearHover = mouseX >= gearX && mouseX <= gearX + gearW && mouseY >= gearY && mouseY <= gearY + toggleH;
                     context.fill(gearX, gearY, gearX + gearW, gearY + toggleH, gearHover ? 0xFF253550 : 0xFF182235);
-                    context.drawBorder(gearX, gearY, gearW, toggleH, 0xFF405070);
+                    HudRenderer.drawBorder(context, gearX, gearY, gearW, toggleH, 0xFF405070);
                     context.drawText(textRenderer, "*", gearX + 8, gearY + 5, 0xFFCCCCCC, false);
                 }
             }
@@ -224,7 +228,7 @@ public class CatClientScreen extends Screen {
             if (curY + cardH >= contentY && curY <= contentY + contentH) {
                 // Setting row background
                 context.fill(contentX, curY, contentX + contentW, curY + cardH, 0xFF0F1728);
-                context.drawBorder(contentX, curY, contentW, cardH, 0xFF202C40);
+                HudRenderer.drawBorder(context, contentX, curY, contentW, cardH, 0xFF202C40);
 
                 // Setting name
                 context.drawText(textRenderer, setting.getName(), contentX + 8, curY + 9, 0xFFEEEEEE, false);
@@ -245,7 +249,7 @@ public class CatClientScreen extends Screen {
                     int modeH = 18;
                     int mX = contentX + contentW - modeW - 8;
                     context.fill(mX, widgetY, mX + modeW, widgetY + modeH, 0xFF182235);
-                    context.drawBorder(mX, widgetY, modeW, modeH, 0xFF00D2FF);
+                    HudRenderer.drawBorder(context, mX, widgetY, modeW, modeH, 0xFF00D2FF);
                     String curMode = modeSet.getMode();
                     int mw = textRenderer.getWidth(curMode);
                     context.drawText(textRenderer, curMode, mX + Math.max(2, (modeW - mw) / 2), widgetY + 5, 0xFF00D2FF, false);
@@ -270,13 +274,13 @@ public class CatClientScreen extends Screen {
                     int colorH = 18;
                     int cX = contentX + contentW - colorW - 8;
                     context.fill(cX, widgetY, cX + colorW, widgetY + colorH, colSet.getColor().getRGB());
-                    context.drawBorder(cX, widgetY, colorW, colorH, 0xFFFFFFFF);
+                    HudRenderer.drawBorder(context, cX, widgetY, colorW, colorH, 0xFFFFFFFF);
                 } else if (setting instanceof KeybindSetting keySet) {
                     int keyW = 75;
                     int keyH = 18;
                     int kX = contentX + contentW - keyW - 8;
                     context.fill(kX, widgetY, kX + keyW, widgetY + keyH, 0xFF182235);
-                    context.drawBorder(kX, widgetY, keyW, keyH, keySet.isListening() ? 0xFFFF5555 : 0xFF00D2FF);
+                    HudRenderer.drawBorder(context, kX, widgetY, keyW, keyH, keySet.isListening() ? 0xFFFF5555 : 0xFF00D2FF);
                     String keyName = keySet.isListening() ? "Press..." : KeyUtils.getKeyName(keySet.getKeyCode());
                     int kw = textRenderer.getWidth(keyName);
                     context.drawText(textRenderer, keyName, kX + Math.max(2, (keyW - kw) / 2), widgetY + 5, keySet.isListening() ? 0xFFFF5555 : 0xFFEEEEEE, false);
@@ -285,7 +289,7 @@ public class CatClientScreen extends Screen {
                     int actionH = 18;
                     int bX = contentX + contentW - actionW - 8;
                     context.fill(bX, widgetY, bX + actionW, widgetY + actionH, 0xFF182235);
-                    context.drawBorder(bX, widgetY, actionW, actionH, 0xFF00D2FF);
+                    HudRenderer.drawBorder(context, bX, widgetY, actionW, actionH, 0xFF00D2FF);
                     int bw = textRenderer.getWidth("Click");
                     context.drawText(textRenderer, "Click", bX + (actionW - bw) / 2, widgetY + 5, 0xFF00D2FF, false);
                 }
@@ -295,10 +299,14 @@ public class CatClientScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button)) {
+    public boolean mouseClicked(Click click, boolean doubled) {
+        if (super.mouseClicked(click, doubled)) {
             return true;
         }
+
+        double mouseX = click.x();
+        double mouseY = click.y();
+        int button = click.button();
 
         int sideW = 100;
         int contentX = sideW + 14;
@@ -419,6 +427,30 @@ public class CatClientScreen extends Screen {
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         scrollOffset = MathHelper.clamp(scrollOffset - (verticalAmount * 20), 0, maxScroll);
         return true;
+    }
+
+    @Override
+    public boolean keyPressed(KeyInput keyInput) {
+        if (selectedModSettings != null) {
+            for (Setting setting : selectedModSettings.settings) {
+                if (setting instanceof KeybindSetting keySet && keySet.isListening()) {
+                    if (keyInput.key() == GLFW.GLFW_KEY_ESCAPE) {
+                        keySet.setKey(GLFW.GLFW_KEY_UNKNOWN);
+                    } else {
+                        keySet.setKey(keyInput.key());
+                    }
+                    keySet.setListening(false);
+                    CatClient.configManager().saveConfig();
+                    return true;
+                }
+            }
+            if (keyInput.key() == GLFW.GLFW_KEY_ESCAPE) {
+                selectedModSettings = null;
+                init();
+                return true;
+            }
+        }
+        return super.keyPressed(keyInput);
     }
 
     @Override

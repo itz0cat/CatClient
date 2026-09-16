@@ -47,13 +47,13 @@ public class HudManager {
 
         for (HudElement element : elements) {
             if (element.isEnabled()) {
-                context.getMatrices().push();
+                context.getMatrices().pushMatrix();
                 HudPosition pos = element.getPosition();
                 float scale = pos.scale > 0 ? pos.scale : 1.0f;
-                context.getMatrices().translate(pos.x, pos.y, 0);
-                context.getMatrices().scale(scale, scale, 1.0f);
+                context.getMatrices().translate(pos.x, pos.y);
+                context.getMatrices().scale(scale, scale);
                 element.renderHud(context, tickCounter);
-                context.getMatrices().pop();
+                context.getMatrices().popMatrix();
             }
         }
     }
@@ -61,13 +61,13 @@ public class HudManager {
     public void renderPlaceholders(DrawContext context) {
         for (HudElement element : elements) {
             if (element.isEnabled()) {
-                context.getMatrices().push();
+                context.getMatrices().pushMatrix();
                 HudPosition pos = element.getPosition();
                 float scale = pos.scale > 0 ? pos.scale : 1.0f;
-                context.getMatrices().translate(pos.x, pos.y, 0);
-                context.getMatrices().scale(scale, scale, 1.0f);
+                context.getMatrices().translate(pos.x, pos.y);
+                context.getMatrices().scale(scale, scale);
                 element.renderPlaceholder(context);
-                context.getMatrices().pop();
+                context.getMatrices().popMatrix();
             }
         }
     }

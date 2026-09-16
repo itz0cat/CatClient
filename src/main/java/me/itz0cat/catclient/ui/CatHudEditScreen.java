@@ -4,7 +4,9 @@ import me.itz0cat.catclient.CatClient;
 import me.itz0cat.catclient.hud.HudElement;
 import me.itz0cat.catclient.hud.HudManager;
 import me.itz0cat.catclient.hud.HudPosition;
+import me.itz0cat.catclient.hud.HudRenderer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -93,7 +95,7 @@ public class CatHudEditScreen extends Screen {
                 float scale = pos.scale > 0 ? pos.scale : 1.0f;
                 int w = (int) (elem.getWidth() * scale);
                 int h = (int) (elem.getHeight() * scale);
-                context.drawBorder((int) pos.x - 1, (int) pos.y - 1, w + 2, h + 2, 0xFFFFFFFF);
+                HudRenderer.drawBorder(context, (int) pos.x - 1, (int) pos.y - 1, w + 2, h + 2, 0xFFFFFFFF);
             });
         } else {
             // Dragging outline
@@ -101,7 +103,7 @@ public class CatHudEditScreen extends Screen {
             float scale = pos.scale > 0 ? pos.scale : 1.0f;
             int w = (int) (draggingElement.getWidth() * scale);
             int h = (int) (draggingElement.getHeight() * scale);
-            context.drawBorder((int) pos.x - 2, (int) pos.y - 2, w + 4, h + 4, 0xFF00D2FF);
+            HudRenderer.drawBorder(context, (int) pos.x - 2, (int) pos.y - 2, w + 4, h + 4, 0xFF00D2FF);
         }
 
         super.render(context, mouseX, mouseY, delta);
@@ -114,10 +116,14 @@ public class CatHudEditScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button)) {
+    public boolean mouseClicked(Click click, boolean doubled) {
+        if (super.mouseClicked(click, doubled)) {
             return true;
         }
+
+        double mouseX = click.x();
+        double mouseY = click.y();
+        int button = click.button();
 
         Optional<HudElement> clicked = HudManager.getInstance().getElementAt((int) mouseX, (int) mouseY);
         if (clicked.isPresent()) {
@@ -139,7 +145,10 @@ public class CatHudEditScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+        double mouseX = click.x();
+        double mouseY = click.y();
+        int button = click.button();
         if (draggingElement != null && button == 0) {
             float scale = draggingElement.getPosition().scale > 0 ? draggingElement.getPosition().scale : 1.0f;
             float elemW = draggingElement.getWidth() * scale;
@@ -189,17 +198,17 @@ public class CatHudEditScreen extends Screen {
             draggingElement.getPosition().set(targetX, targetY);
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(click, deltaX, deltaY);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(Click click) {
         if (draggingElement != null) {
             draggingElement = null;
             CatClient.configManager().saveConfig();
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(click);
     }
 
     @Override

@@ -34,9 +34,13 @@ public class HudRenderer {
         }
     }
 
+    public static void drawBorder(DrawContext context, int x, int y, int width, int height, int color) {
+        context.drawStrokedRectangle(x, y, width, height, color);
+    }
+
     public static void drawPlaceholderBox(DrawContext context, String name, int width, int height) {
         context.fill(0, 0, width, height, 0x900A0F1D);
-        context.drawBorder(0, 0, width, height, 0xFF00D2FF);
+        drawBorder(context, 0, 0, width, height, 0xFF00D2FF);
         int textWidth = mc.textRenderer.getWidth(name);
         int textX = Math.max(2, (width - textWidth) / 2);
         int textY = Math.max(1, (height - mc.textRenderer.fontHeight) / 2);

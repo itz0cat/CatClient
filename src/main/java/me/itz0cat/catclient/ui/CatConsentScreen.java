@@ -2,6 +2,7 @@ package me.itz0cat.catclient.ui;
 
 import me.itz0cat.catclient.CatClient;
 import me.itz0cat.catclient.api.backend.CatBackendClient;
+import me.itz0cat.catclient.hud.HudRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -70,7 +71,7 @@ public class CatConsentScreen extends Screen {
 
         // Card background & cyan border
         context.fill(cardX, cardY, cardX + cardW, cardY + cardH, 0xF00A0F1D);
-        context.drawBorder(cardX, cardY, cardW, cardH, 0xFF00D2FF);
+        HudRenderer.drawBorder(context, cardX, cardY, cardW, cardH, 0xFF00D2FF);
 
         // Header
         String titleStr = "CatClient Online Services";

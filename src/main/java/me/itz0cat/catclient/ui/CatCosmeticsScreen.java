@@ -1,5 +1,6 @@
 package me.itz0cat.catclient.ui;
 
+import me.itz0cat.catclient.hud.HudRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -31,7 +32,7 @@ public class CatCosmeticsScreen extends Screen {
         int cardY = (height - cardH) / 2;
 
         context.fill(cardX, cardY, cardX + cardW, cardY + cardH, 0xF00A0F1D);
-        context.drawBorder(cardX, cardY, cardW, cardH, 0xFF00D2FF);
+        HudRenderer.drawBorder(context, cardX, cardY, cardW, cardH, 0xFF00D2FF);
 
         String title = "Cosmetics System";
         int tw = textRenderer.getWidth(title);
