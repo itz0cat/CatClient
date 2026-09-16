@@ -2,7 +2,6 @@ package me.itz0cat.catclient;
 
 import me.itz0cat.catclient.api.backend.CatBackendClient;
 import me.itz0cat.catclient.api.config.ConfigManager;
-import me.itz0cat.catclient.api.discord.DiscordClient;
 import me.itz0cat.catclient.api.event.events.OverlayReloadListener;
 import me.itz0cat.catclient.api.event.events.WorldRenderEvent;
 import me.itz0cat.catclient.api.event.orbit.EventBus;
@@ -69,8 +68,6 @@ public final class CatClient implements ModInitializer {
 		WorldRenderEvents.END_MAIN.register((context) -> { EVENTBUS.post(WorldRenderEvent.get(context)); });
 
 		this.configManager.loadConfig();
-
-		DiscordClient.init();
 		CapeHelper.init();
 		if (this.configManager.privacyConsent) {
 			CatBackendClient.init();
