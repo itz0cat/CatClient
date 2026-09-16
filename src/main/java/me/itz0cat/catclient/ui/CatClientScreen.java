@@ -435,9 +435,9 @@ public class CatClientScreen extends Screen {
             for (Setting setting : selectedModSettings.settings) {
                 if (setting instanceof KeybindSetting keySet && keySet.isListening()) {
                     if (keyInput.key() == GLFW.GLFW_KEY_ESCAPE) {
-                        keySet.setKey(GLFW.GLFW_KEY_UNKNOWN);
+                        keySet.setKeyCode(GLFW.GLFW_KEY_UNKNOWN);
                     } else {
-                        keySet.setKey(keyInput.key());
+                        keySet.setKeyCode(keyInput.key());
                     }
                     keySet.setListening(false);
                     CatClient.configManager().saveConfig();

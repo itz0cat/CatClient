@@ -27,6 +27,10 @@ public class KeybindSetting extends Setting {
         this.code = code;
     }
 
+    public void setKey(int code) {
+        setKeyCode(code);
+    }
+
     public boolean isListening() {
         return isListening;
     }
