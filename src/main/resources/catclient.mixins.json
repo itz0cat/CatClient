@@ -37,7 +37,6 @@
     "ServerEntryMixin",
     "SimpleOptionMixin",
     "SplashScreenMixin",
-    "TitleScreenMixin",
-    "WindowMixin"
+    "TitleScreenMixin"
   ]
 }

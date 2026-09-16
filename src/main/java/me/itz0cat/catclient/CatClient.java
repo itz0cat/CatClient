@@ -1,4 +1,6 @@
 package me.itz0cat.catclient;
+
+import me.itz0cat.catclient.api.backend.CatBackendClient;
 import me.itz0cat.catclient.api.config.ConfigManager;
 import me.itz0cat.catclient.api.discord.DiscordClient;
 import me.itz0cat.catclient.api.event.events.OverlayReloadListener;
@@ -8,7 +10,6 @@ import me.itz0cat.catclient.api.event.orbit.IEventBus;
 import me.itz0cat.catclient.api.helpers.CPSHelper;
 import me.itz0cat.catclient.api.helpers.CapeHelper;
 import me.itz0cat.catclient.api.helpers.IndicatorHelper;
-import me.itz0cat.catclient.menu.*;
 import me.itz0cat.catclient.mod.ModManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -42,6 +43,7 @@ public final class CatClient implements ModInitializer {
 	public static ArrayList<Map.Entry<String, String>> partneredServers = new ArrayList<>();
 	public static ArrayList<String> starServers = new ArrayList<>();
 	public static final Logger LOGGER = LoggerFactory.getLogger("catclient");
+
 	public static ModManager modManager() {
 		return INSTANCE.modManager;
 	}
@@ -63,21 +65,17 @@ public final class CatClient implements ModInitializer {
 
 		EVENTBUS.registerLambdaFactory(packagePrefix, (lookupInMethod, klass) -> (MethodHandles.Lookup) lookupInMethod.invoke(null, klass, MethodHandles.lookup()));
 		EVENTBUS.subscribe(modManager);
-		EVENTBUS.subscribe(MainMenuButtons.class);
 		EVENTBUS.subscribe(CPSHelper.class);
 		WorldRenderEvents.END_MAIN.register((context) -> { EVENTBUS.post(WorldRenderEvent.get(context)); });
 
-		MainMenuButtons.toggleVisibility();
-		FirstMenu.toggleVisibility();
-		ModMenu.toggleVisibility();
-		ModSettings.toggleVisibility();
-		SideMenu.toggleVisibility();
-		ProfilesMenu.toggleVisibility();
-		CosmeticsMenu.toggleVisibility();
 		this.configManager.loadConfig();
 
 		DiscordClient.init();
 		CapeHelper.init();
+		if (this.configManager.privacyConsent) {
+			CatBackendClient.init();
+		}
+
 		partneredServers.add(new AbstractMap.SimpleEntry<>("as.catpvp.xyz", "CatPvP AS"));
 		partneredServers.add(new AbstractMap.SimpleEntry<>("eu.catpvp.xyz", "CatPvP EU"));
 		partneredServers.add(new AbstractMap.SimpleEntry<>("flakepvp.me", "FlakePvP"));
@@ -110,35 +108,46 @@ public final class CatClient implements ModInitializer {
 		starServers.add("me.flakepvp.net");
 	}
 
-
 	private int tick = 0;
+
 	@Override
 	public void onInitialize() {
-		//init();
-		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> IndicatorHelper.enableClient());
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> IndicatorHelper.disableClient());
+		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+			if (CatClient.configManager().privacyConsent) {
+				IndicatorHelper.enableClient();
+			}
+		});
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+			if (CatClient.configManager().privacyConsent) {
+				IndicatorHelper.disableClient();
+			}
+		});
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> CatClient.configManager().saveConfig());
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> CatClient.configManager().saveConfig());
 
 		ClientTickEvents.END_WORLD_TICK.register((client) -> {
 			OverlayReloadListener.callEvent();
-			if(tick != 100) {
+			if (tick != 100) {
 				tick++;
 			} else {
 				tick = 0;
-				IndicatorHelper.getUsers();
+				if (CatClient.configManager().privacyConsent) {
+					IndicatorHelper.getUsers();
+				}
 			}
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register((client) -> {
-			if(nextTick != null) {
+			if (nextTick != null) {
 				CatClient.configManager().loadConfigFromPath(nextTick);
 				nextTick = null;
 			}
-			if(uuid == null && mc.getSession().getUuidOrNull() != null) {
+			if (uuid == null && mc.getSession().getUuidOrNull() != null) {
 				uuid = mc.getSession().getUuidOrNull();
-				getPlayerCosmetics();
+				if (CatClient.configManager().privacyConsent) {
+					getPlayerCosmetics();
+				}
 			}
 		});
 	}

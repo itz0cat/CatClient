@@ -1,186 +1,88 @@
 package me.itz0cat.catclient.mod.mods;
 
-import imgui.ImFont;
-import imgui.ImGui;
-import imgui.ImVec2;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiWindowFlags;
-import me.itz0cat.catclient.CatClient;
 import me.itz0cat.catclient.api.font.JColor;
-import me.itz0cat.catclient.api.helpers.CPSHelper;
-import me.itz0cat.catclient.gui.ImguiLoader;
-import me.itz0cat.catclient.gui.Renderable;
-import me.itz0cat.catclient.gui.UI;
-import me.itz0cat.catclient.menu.FirstMenu;
-import me.itz0cat.catclient.menu.ModSettings;
-import me.itz0cat.catclient.mod.GeneralSettings;
+import me.itz0cat.catclient.hud.HudElement;
+import me.itz0cat.catclient.hud.HudManager;
+import me.itz0cat.catclient.hud.HudPosition;
+import me.itz0cat.catclient.hud.HudRenderer;
+import me.itz0cat.catclient.mod.Category;
 import me.itz0cat.catclient.mod.Mod;
 import me.itz0cat.catclient.mod.setting.settings.BooleanSetting;
 import me.itz0cat.catclient.mod.setting.settings.ColorSetting;
 import me.itz0cat.catclient.mod.setting.settings.ModeSetting;
-import me.itz0cat.catclient.mod.setting.settings.NumberSetting;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.ItemStack;
 
-import static me.itz0cat.catclient.CatClient.mc;
-import static me.itz0cat.catclient.CatClient.modManager;
-import static me.itz0cat.catclient.api.util.RenderUtils.isRenderable;
-
-public class ArmorMod extends Mod implements Renderable {
-    //public final ModeSetting position = new ModeSetting("Position", this, "Hotbar", "Hotbar", "Top Center", "Top", "Bottom");
+public class ArmorMod extends Mod implements HudElement {
     public final BooleanSetting showDura = new BooleanSetting("Durability", this, true);
     public final ModeSetting duraMode = new ModeSetting("Durability Mode", this, "Numbers", "Numbers", "Percentages");
-    public final ModeSetting fontSetting = new ModeSetting("Font", this, "Minecraft", "Minecraft", "Dosis", "Mono");
     public final ColorSetting textSetting = new ColorSetting("Text Color", this, new JColor(1f, 1f, 1f), false);
     public final BooleanSetting textShadow = new BooleanSetting("Text Shadow", this, true);
     public final ModeSetting direction = new ModeSetting("Direction", this, "Vertical", "Vertical", "Horizontal");
 
-    public boolean firstFrame = true;
-    private static final net.minecraft.entity.EquipmentSlot[] ARMOR_SLOTS = new net.minecraft.entity.EquipmentSlot[] {
-        net.minecraft.entity.EquipmentSlot.HEAD,
-        net.minecraft.entity.EquipmentSlot.CHEST,
-        net.minecraft.entity.EquipmentSlot.LEGS,
-        net.minecraft.entity.EquipmentSlot.FEET
+    private static final EquipmentSlot[] ARMOR_SLOTS = new EquipmentSlot[] {
+        EquipmentSlot.HEAD,
+        EquipmentSlot.CHEST,
+        EquipmentSlot.LEGS,
+        EquipmentSlot.FEET
     };
-    //public ImVec2 position = new ImVec2(82, 200);
+
     public ArmorMod() {
         super("Armor Status", "Shows your armor status.", "\uF132");
-        toggleVisibility();
-    }
-
-    public void toggleVisibility() {
-        ImguiLoader.addRenderable(this);
+        this.category = Category.HUD;
+        HudManager.getInstance().register(this);
     }
 
     @Override
-    public void render() {
-        if(!CatClient.modManager().getMod("Armor Status").isEnabled()) {
-            firstFrame = true;
-            return;
-        }
-        if(mc.player == null && !FirstMenu.getInstance().isVisible) return;
+    public int getWidth() {
+        return direction.is("Vertical") ? (showDura.isEnabled() ? 48 : 20) : (4 * 20);
+    }
 
-        if (mc.currentScreen instanceof ChatScreen && !modManager().getMod(GeneralSettings.class).showInChat.isEnabled())
-            return;
-        if (mc.currentScreen instanceof InventoryScreen && !modManager().getMod(GeneralSettings.class).showInInventory.isEnabled())
-            return;
-        if (mc.currentScreen != null &&
-                !(mc.currentScreen instanceof InventoryScreen) &&
-                !(mc.currentScreen instanceof ChatScreen) &&
-                !FirstMenu.getInstance().isVisible
-        )
-            return;
-        if (mc.options.hudHidden)
-            return;
+    @Override
+    public int getHeight() {
+        return direction.is("Vertical") ? (4 * 20) : 20;
+    }
 
+    @Override
+    public HudPosition getPosition() {
+        return this.position;
+    }
 
-        int imGuiWindowFlags = 0;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoTitleBar;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoDocking;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoFocusOnAppearing;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoBringToFrontOnFocus;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoResize;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoScrollbar;
-        float[] c;
-        if(!FirstMenu.getInstance().isVisible) {
-            imGuiWindowFlags |= ImGuiWindowFlags.NoMove;
-            imGuiWindowFlags |= ImGuiWindowFlags.NoBackground;
-            ImGui.pushStyleColor(ImGuiCol.Border, 0f,0f,0f,0f);
-            ImGui.pushStyleColor(ImGuiCol.WindowBg, 0f, 0f, 0f, 0f);
-        } else {
-            ImGui.pushStyleColor(ImGuiCol.Border, 1f, 1f, 1f, 1f);
-            ImGui.pushStyleColor(ImGuiCol.WindowBg, 1f,1f,1f,0.3f);
-        }
+    @Override
+    public void renderHud(DrawContext context, RenderTickCounter tickCounter) {
+        if (mc.player == null) return;
+        boolean isVert = direction.is("Vertical");
+        boolean shadow = textShadow.isEnabled();
+        int textColor = textSetting.getColor().getRGB();
 
-        if(direction.getMode().equals("Vertical"))
-            ImGui.setNextWindowSize(22 * mc.options.getGuiScale().getValue(), 62 * mc.options.getGuiScale().getValue());
-        else
-            ImGui.setNextWindowSize(62+3 * mc.options.getGuiScale().getValue(), 22 * mc.options.getGuiScale().getValue());
-        if(this.updatedPos.x != 0) {
-            this.position.x = this.position.x + this.updatedPos.x;
-            this.updatedPos.x = 0;
-            ImGui.setNextWindowPos(this.position.x, this.position.y);
-        }
-        if(this.updatedPos.y != 0) {
-            this.position.y = this.position.y + this.updatedPos.y;
-            this.updatedPos.y = 0;
-            ImGui.setNextWindowPos(this.position.x, this.position.y);
-        }
-        if(firstFrame) {
-            ImGui.setNextWindowPos(this.position.x, this.position.y);
-        }
-        ImGui.getStyle().setWindowRounding(0);
-        ImGui.getStyle().setWindowBorderSize(1);
-        ImGui.begin(this.getName(), imGuiWindowFlags);
-        this.position = ImGui.getWindowPos();
-        ImGui.popStyleColor(2);
-        ImGui.getStyle().setWindowBorderSize(0);
-        ImGui.getStyle().setWindowRounding(4f);
+        for (int i = 0; i < 4; i++) {
+            ItemStack stack = mc.player.getEquippedStack(ARMOR_SLOTS[i]);
+            int x = isVert ? 0 : (i * 20);
+            int y = isVert ? (i * 20) : 0;
 
-        if(showDura.isEnabled() && mc.player != null && direction.is("Vertical")) {
-            ImFont font = ImguiLoader.getMonoFont18();
-            if(fontSetting.is("Minecraft")) {
-                font = ImguiLoader.getMcFont18();
-            } else if (fontSetting.is("Dosis")) {
-                font = ImguiLoader.getDosisFont18();
-            } else if (fontSetting.is("Mono")) {
-                font = ImguiLoader.getMonoFont18();
-            }
+            if (!stack.isEmpty()) {
+                context.drawItem(stack, x, y);
+                context.drawStackOverlay(mc.textRenderer, stack, x, y);
 
-            for (int i = 0; i < 4; i++) {
-                net.minecraft.item.ItemStack armorStack = mc.player.getEquippedStack(ARMOR_SLOTS[i]);
-                String text = armorStack.getDamage() != 0 ?
+                if (showDura.isEnabled() && stack.isDamageable()) {
+                    int maxDmg = stack.getMaxDamage();
+                    int curDmg = stack.getDamage();
+                    String duraText = duraMode.is("Numbers")
+                            ? String.valueOf(maxDmg - curDmg)
+                            : (int) ((1.0f - (float) curDmg / maxDmg) * 100) + "%";
 
-                        (duraMode.getMode().equals("Numbers") ?
-                                armorStack.getMaxDamage() - armorStack.getDamage() + "" :
-                                (100 - (armorStack.getMaxDamage() / 100 * armorStack.getDamage())) + "%")
-
-                        : " ";
-
-                c = textSetting.getColor().getFloatColor();
-
-                ImGui.pushStyleColor(ImGuiCol.Text, c[0], c[1], c[2], c[3]);
-                ImGui.pushFont(font);
-                float oldScale = ImGui.getFont().getScale();
-                ImGui.getFont().setScale(oldScale * mc.options.getGuiScale().getValue());
-
-                float windowWidth = 22 * mc.options.getGuiScale().getValue();
-                float windowHeight = 22 * mc.options.getGuiScale().getValue();
-                float textWidth = ImGui.calcTextSize(text).x;
-                float textHeight = ImGui.calcTextSize(text).y;
-
-                ImGui.setCursorPos((windowWidth - textWidth) * 0.5f, (16 * mc.options.getGuiScale().getValue()) + (i * 16 * mc.options.getGuiScale().getValue() - ((windowHeight - textHeight) * 0.5f)));
-
-                if (textShadow.isEnabled()) UI.shadowText(text, 32, c[0], c[1], c[2], c[3]);
-                else ImGui.text(text);
-                ImGui.getFont().setScale(oldScale);
-                ImGui.popFont();
-                ImGui.popStyleColor(1);
+                    if (isVert) {
+                        context.drawText(mc.textRenderer, duraText, x + 20, y + 4, textColor, shadow);
+                    }
+                }
             }
         }
+    }
 
-
-        isFocused = ImGui.isWindowFocused();
-
-        if(FirstMenu.getInstance().isVisible) {
-            ImGui.pushFont(ImguiLoader.getFontAwesome18());
-            ImGui.pushStyleColor(ImGuiCol.Button, 0.95f, 0.55f, 0.66f, 0f);
-            ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.95f, 0.55f, 0.66f, 0f);
-            ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.95f, 0.55f, 0.66f, 0f);
-            ImGui.pushStyleColor(ImGuiCol.Text, 0.80f, 0.84f, 0.96f, 0.9f);
-            ImGui.setCursorPos(0, 0);
-            if (ImGui.button("\uF013", 22f, 22f)) {
-                ModSettings.getInstance().mod = this;
-                ModSettings.getInstance().isVisible = true;
-            }
-            ImGui.setCursorPos(22, 0);
-            if (ImGui.button("\uF00D", 22f, 22f)) {
-                this.toggle();
-            }
-            ImGui.popFont();
-            ImGui.popStyleColor(4);
-        }
-        ImGui.end();
-        if(firstFrame) firstFrame = false;
+    @Override
+    public void renderPlaceholder(DrawContext context) {
+        HudRenderer.drawPlaceholderBox(context, "Armor", getWidth(), getHeight());
     }
 }

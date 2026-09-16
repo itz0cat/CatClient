@@ -1,25 +1,27 @@
 package me.itz0cat.catclient.api.helpers;
 
-import imgui.ImFont;
-import imgui.ImGui;
-import imgui.ImVec2;
-import imgui.flag.ImGuiCol;
-import me.itz0cat.catclient.CatClient;
 import me.itz0cat.catclient.api.font.JColor;
-import me.itz0cat.catclient.gui.UI;
-import me.itz0cat.catclient.mod.mods.KeystrokesMod;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.InputUtil;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.client.gui.DrawContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class KeystrokeHelper {
+    private static final MinecraftClient mc = MinecraftClient.getInstance();
+
     private int key;
     private String display;
     private long pressTime;
     private boolean pressed;
+
+    public static final List<KeystrokeHelper> list = new ArrayList<>();
+
+    public KeystrokeHelper(int key, String display) {
+        this.key = key;
+        this.display = display;
+        list.add(this);
+    }
 
     public int getKey() { return key; }
     public void setKey(int key) { this.key = key; }
@@ -29,87 +31,22 @@ public class KeystrokeHelper {
     public void setPressTime(long pressTime) { this.pressTime = pressTime; }
     public boolean isPressed() { return pressed; }
     public void setPressed(boolean pressed) { this.pressed = pressed; }
-    public static List<KeystrokeHelper> list = new ArrayList<>();
-    public KeystrokeHelper(int key, String display) {
-        this.key = key;
-        this.display = display;
-        list.add(this);
-    }
 
     public static KeystrokeHelper getHelper(int key) {
-        for(KeystrokeHelper k : list) {
-            if(k.key == key) return k;
+        for (KeystrokeHelper k : list) {
+            if (k.key == key) return k;
         }
         return null;
     }
 
-    public void drawButton() {
-        double percent = Math.sin((((double) Math.min(System.currentTimeMillis() - this.pressTime, CatClient.modManager().getMod(KeystrokesMod.class).fadeTime.getFValue()) / CatClient.modManager().getMod(KeystrokesMod.class).fadeTime.getFValue()) * Math.PI) / 2);
-        //double percent = 1;
-        if(this.pressTime == 0) percent = 1;
+    public void draw(DrawContext context, int x, int y, int w, int h, JColor normalBg, JColor pressedBg, JColor normalText, JColor pressedText, boolean shadow) {
+        int bgColor = pressed ? pressedBg.getRGB() : normalBg.getRGB();
+        int textColor = pressed ? pressedText.getRGB() : normalText.getRGB();
+        context.fill(x, y, x + w, y + h, bgColor);
 
-        float[] bgF;
-        float[] textF;
-        if(pressed) {
-            JColor bg = UI.blendColors(CatClient.modManager().getMod(KeystrokesMod.class).background.getColor(), CatClient.modManager().getMod(KeystrokesMod.class).pressedBackground.getColor(), (float) percent);
-            bgF = bg.getFloatColor();
-            JColor text = UI.blendColors(CatClient.modManager().getMod(KeystrokesMod.class).text.getColor(), CatClient.modManager().getMod(KeystrokesMod.class).pressedText.getColor(), (float) percent);
-            textF = text.getFloatColor();
-        } else {
-            JColor bg = UI.blendColors(CatClient.modManager().getMod(KeystrokesMod.class).pressedBackground.getColor(), CatClient.modManager().getMod(KeystrokesMod.class).background.getColor(), (float) percent);
-            bgF = bg.getFloatColor();
-            JColor text = UI.blendColors(CatClient.modManager().getMod(KeystrokesMod.class).pressedText.getColor(), CatClient.modManager().getMod(KeystrokesMod.class).text.getColor(), (float) percent);
-            textF = text.getFloatColor();
-        }
-
-        ImVec2 pos = ImGui.getCursorPos();
-        float oldScale = ImGui.getFont().getScale();
-        ImFont newFont = ImGui.getFont();
-
-        float scaleChange;
-
-        if(!pressed) scaleChange = (float) (0.8f + percent * 0.2f);
-        else scaleChange = (float) (1f - percent * 0.2f);
-
-        if(CatClient.modManager().getMod(KeystrokesMod.class).scaleChange.isEnabled()) {
-            if(!pressed)
-                newFont.setScale(ImGui.getFont().getScale() * scaleChange);
-            else
-                newFont.setScale(ImGui.getFont().getScale() * scaleChange);
-        }
-        ImGui.pushFont(newFont);
-        if(CatClient.modManager().getMod(KeystrokesMod.class).textShadow.isEnabled()) {
-            ImGui.setCursorPos(pos.x + 32 * 0.07f, pos.y + 32 * 0.07f);
-            ImGui.pushStyleColor(ImGuiCol.Text, textF[0]/2, textF[1]/2, textF[2]/2, textF[3]);
-            ImGui.pushStyleColor(ImGuiCol.Button, bgF[0], bgF[1], bgF[2], 0f);
-            ImGui.pushStyleColor(ImGuiCol.ButtonHovered, bgF[0], bgF[1], bgF[2], 0f);
-            ImGui.pushStyleColor(ImGuiCol.ButtonActive, bgF[0], bgF[1], bgF[2], 0f);
-            if (key == GLFW.GLFW_MOUSE_BUTTON_LEFT || key == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-                ImGui.button(this.display, 77f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue(), 50f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue());
-            } else if (key == GLFW.GLFW_KEY_SPACE) {
-                ImGui.button(this.display, 158f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue(), 50f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue());
-            } else {
-                ImGui.button(this.display, 50f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue(), 50f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue());
-            }
-            ImGui.popStyleColor(4);
-        }
-        ImGui.setCursorPos(pos.x, pos.y);
-        ImGui.pushStyleColor(ImGuiCol.Text, textF[0], textF[1], textF[2], textF[3]);
-        ImGui.pushStyleColor(ImGuiCol.Button, bgF[0], bgF[1], bgF[2], bgF[3]);
-        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, bgF[0], bgF[1], bgF[2], bgF[3]);
-        ImGui.pushStyleColor(ImGuiCol.ButtonActive, bgF[0], bgF[1], bgF[2], bgF[3]);
-        if (key == GLFW.GLFW_MOUSE_BUTTON_LEFT || key == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-            ImGui.button(this.display, 77f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue(), 50f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue());
-        } else if (key == GLFW.GLFW_KEY_SPACE) {
-            ImGui.button(this.display, 158f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue(), 50f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue());
-        } else {
-            ImGui.button(this.display, 50f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue(), 50f * CatClient.modManager().getMod(KeystrokesMod.class).scale.getFValue());
-        }
-        ImGui.popFont();
-        ImGui.getFont().setScale(oldScale);
-        ImGui.popStyleColor(4);
-
-
+        int textW = mc.textRenderer.getWidth(display);
+        int textX = x + Math.max(1, (w - textW) / 2);
+        int textY = y + Math.max(1, (h - mc.textRenderer.fontHeight) / 2);
+        context.drawText(mc.textRenderer, display, textX, textY, textColor, shadow);
     }
-    public void drawButton1() {}
 }

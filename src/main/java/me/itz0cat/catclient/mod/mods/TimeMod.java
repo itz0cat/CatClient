@@ -1,183 +1,70 @@
 package me.itz0cat.catclient.mod.mods;
 
-import imgui.ImFont;
-import imgui.ImGui;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiWindowFlags;
-import me.itz0cat.catclient.CatClient;
 import me.itz0cat.catclient.api.font.JColor;
-import me.itz0cat.catclient.api.helpers.FPSHelper;
-import me.itz0cat.catclient.gui.ImguiLoader;
-import me.itz0cat.catclient.gui.Renderable;
-import me.itz0cat.catclient.gui.UI;
-import me.itz0cat.catclient.menu.FirstMenu;
-import me.itz0cat.catclient.menu.ModSettings;
-import me.itz0cat.catclient.mod.GeneralSettings;
+import me.itz0cat.catclient.hud.HudElement;
+import me.itz0cat.catclient.hud.HudManager;
+import me.itz0cat.catclient.hud.HudPosition;
+import me.itz0cat.catclient.hud.HudRenderer;
+import me.itz0cat.catclient.mod.Category;
 import me.itz0cat.catclient.mod.Mod;
 import me.itz0cat.catclient.mod.setting.settings.BooleanSetting;
 import me.itz0cat.catclient.mod.setting.settings.ColorSetting;
-import me.itz0cat.catclient.mod.setting.settings.ModeSetting;
 import me.itz0cat.catclient.mod.setting.settings.NumberSetting;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderTickCounter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static me.itz0cat.catclient.CatClient.modManager;
-import static me.itz0cat.catclient.api.util.RenderUtils.isRenderable;
-
-public class TimeMod extends Mod implements Renderable {
-    private boolean firstFrame = true;
+public class TimeMod extends Mod implements HudElement {
     public final ColorSetting background = new ColorSetting("Background Color", this, new JColor(0f, 0f, 0f, 0.75f), true);
     public final ColorSetting text = new ColorSetting("Text Color", this, new JColor(1f, 1f, 1f), false);
     public final BooleanSetting textShadow = new BooleanSetting("Text Shadow", this, true);
     public final NumberSetting scale = new NumberSetting("Scale", this, 1, 0.5, 2, 0.1);
-    public final NumberSetting width = new NumberSetting("Width", this, 150, 100, 250, 1);
-    public final NumberSetting height = new NumberSetting("Height", this, 50, 32, 100, 1);
+    public final NumberSetting width = new NumberSetting("Width", this, 65, 30, 150, 1);
+    public final NumberSetting height = new NumberSetting("Height", this, 16, 10, 50, 1);
     public final BooleanSetting backgroundEnabled = new BooleanSetting("Background", this, true);
-    public final BooleanSetting roundedCorners = new BooleanSetting("Rounded Corners", this, false);
-    public final ModeSetting fontSetting = new ModeSetting("Font", this, "Minecraft", "Minecraft", "Dosis", "Mono");
-
     public final BooleanSetting showSeconds = new BooleanSetting("Show Seconds", this, false);
-    //public final BooleanSetting format = new BooleanSetting("24 Hour Format", this, true);
-    private DateTimeFormatter formatter = null;
-    private boolean error = false;
 
-    public void updateDateTimeFormatter(String value) {
-        try {
-            formatter = DateTimeFormatter.ofPattern(value);
-            error = false;
-        } catch (Exception e) {
-            error = true;
-            formatter = null;
-        }
-    }
-
-    public String getValue() {
-        if (error) {
-            return "Error Compiling!";
-        }
-        if (formatter == null) {
-            if(showSeconds.isEnabled()) {
-                updateDateTimeFormatter("HH:mm:ss");
-            } else {
-                updateDateTimeFormatter("HH:mm");
-            }
-            return getValue();
-        }
-        return formatter.format(LocalDateTime.now());
-    }
+    private static final DateTimeFormatter FORMATTER_NO_SEC = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter FORMATTER_SEC = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public TimeMod() {
         super("Time", "Shows your IRL time.", "\uF017");
-        toggleVisibility();
+        this.category = Category.HUD;
+        HudManager.getInstance().register(this);
     }
 
-    public void toggleVisibility() {
-        ImguiLoader.addRenderable(this);
+    public String getTimeString() {
+        DateTimeFormatter dtf = showSeconds.isEnabled() ? FORMATTER_SEC : FORMATTER_NO_SEC;
+        return dtf.format(LocalDateTime.now());
     }
 
     @Override
-    public void render() {
-        if(!CatClient.modManager().getMod("Time").isEnabled()) {
-            firstFrame = true;
-            return;
-        }
-        if(!isRenderable()) return;
+    public int getWidth() {
+        return (int) width.getValue();
+    }
 
-        ImFont font = ImguiLoader.getMonoFont32();
-        if(fontSetting.is("Minecraft")) {
-            font = ImguiLoader.getMcFont32();
-        } else if (fontSetting.is("Dosis")) {
-            font = ImguiLoader.getDosisFont32();
-        } else if (fontSetting.is("Mono")) {
-            font = ImguiLoader.getMonoFont32();
-        }
-        font.setScale(scale.getFValue());
+    @Override
+    public int getHeight() {
+        return (int) height.getValue();
+    }
 
-        int imGuiWindowFlags = 0;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoTitleBar;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoDocking;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoFocusOnAppearing;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoBringToFrontOnFocus;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoResize;
-        imGuiWindowFlags |= ImGuiWindowFlags.NoScrollbar;
-        if(!backgroundEnabled.isEnabled()) imGuiWindowFlags |= ImGuiWindowFlags.NoBackground;
-        float[] c;
-        if(!FirstMenu.getInstance().isVisible) {
-            imGuiWindowFlags |= ImGuiWindowFlags.NoMove;
-            ImGui.getStyle().setWindowBorderSize(0);
-            ImGui.pushStyleColor(ImGuiCol.Border, 0f,0f,0f,0f);
-            c = background.getColor().getFloatColor();
-            ImGui.pushStyleColor(ImGuiCol.WindowBg, c[0], c[1], c[2], c[3]);
-        } else {
-            ImGui.getStyle().setWindowBorderSize(1);
-            ImGui.pushStyleColor(ImGuiCol.Border, 1f, 1f, 1f, 1f);
-            c = background.getColor().jBrighter().getFloatColor();
-            ImGui.pushStyleColor(ImGuiCol.WindowBg, c[0], c[1], c[2], c[3]);
-        }
-        c = text.getColor().getFloatColor();
-        ImGui.pushStyleColor(ImGuiCol.Text, c[0], c[1], c[2], c[3]);
+    @Override
+    public HudPosition getPosition() {
+        return this.position;
+    }
 
-        if(this.updatedPos.x != 0) {
-            this.position.x = this.position.x + this.updatedPos.x;
-            this.updatedPos.x = 0;
-            ImGui.setNextWindowPos(this.position.x, this.position.y);
-        }
-        if(this.updatedPos.y != 0) {
-            this.position.y = this.position.y + this.updatedPos.y;
-            this.updatedPos.y = 0;
-            ImGui.setNextWindowPos(this.position.x, this.position.y);
-        }
-        if(firstFrame) {
-            ImGui.setNextWindowPos(this.position.x, this.position.y);
-        }
-        ImGui.setNextWindowSize(width.getFValue() * scale.getFValue(), height.getFValue() * scale.getFValue());
-        ImGui.pushFont(font);
-        ImGui.getStyle().setWindowRounding(0);
-        if(roundedCorners.isEnabled()) ImGui.getStyle().setWindowRounding(16f * scale.getFValue());
-        ImGui.begin(this.getName(), imGuiWindowFlags);
+    @Override
+    public void renderHud(DrawContext context, RenderTickCounter tickCounter) {
+        position.scale = scale.getFValue();
+        String time = getTimeString();
+        String textStr = (backgroundEnabled.isEnabled() ? "" : "[") + time + (backgroundEnabled.isEnabled() ? "" : "]");
+        HudRenderer.drawHudBox(context, getWidth(), getHeight(), background.getColor(), backgroundEnabled.isEnabled(), text.getColor(), textShadow.isEnabled(), textStr);
+    }
 
-        String text;
-        if(backgroundEnabled.isEnabled()) text = getValue();
-        else text = "[" + getValue() + "]";
-
-        float windowWidth = ImGui.getWindowSize().x;
-        float windowHeight = ImGui.getWindowSize().y;
-        float textWidth   = ImGui.calcTextSize(text).x;
-        float textHeight   = ImGui.calcTextSize(text).y;
-
-        ImGui.setCursorPos((windowWidth - textWidth) * 0.5f, (windowHeight - textHeight) * 0.5f);
-        if(textShadow.isEnabled()) UI.shadowText(text, 32, c[0], c[1], c[2], c[3]);
-        else ImGui.text(text);
-
-        ImGui.popStyleColor(3);
-        ImGui.popFont();
-        font.setScale(1f);
-        ImGui.getStyle().setWindowRounding(8);
-        this.position = ImGui.getWindowPos();
-        isFocused = ImGui.isWindowFocused();
-
-        if(FirstMenu.getInstance().isVisible) {
-            ImGui.pushFont(ImguiLoader.getFontAwesome18());
-            ImGui.pushStyleColor(ImGuiCol.Button, 0.95f, 0.55f, 0.66f, 0f);
-            ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.95f, 0.55f, 0.66f, 0f);
-            ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.95f, 0.55f, 0.66f, 0f);
-            ImGui.pushStyleColor(ImGuiCol.Text, 0.80f, 0.84f, 0.96f, 0.9f);
-            ImGui.setCursorPos(0, 0);
-            if (ImGui.button("\uF013", 22f, 22f)) {
-                ModSettings.getInstance().mod = this;
-                ModSettings.getInstance().isVisible = true;
-            }
-            ImGui.setCursorPos(22, 0);
-            if (ImGui.button("\uF00D", 22f, 22f)) {
-                this.toggle();
-            }
-            ImGui.popFont();
-            ImGui.popStyleColor(4);
-        }
-        ImGui.end();
-        if(firstFrame) firstFrame = false;
+    @Override
+    public void renderPlaceholder(DrawContext context) {
+        HudRenderer.drawPlaceholderBox(context, getName(), getWidth(), getHeight());
     }
 }

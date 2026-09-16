@@ -1,25 +1,17 @@
 package me.itz0cat.catclient.mixin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import me.itz0cat.catclient.menu.MainMenuButtons;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Overlay;
 import net.minecraft.client.gui.screen.SplashOverlay;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.resource.ResourceReload;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import javax.swing.*;
-import java.util.Optional;
-import java.util.OptionalInt;
 
 @Mixin(SplashOverlay.class)
 public abstract class SplashScreenMixin extends Overlay {
@@ -35,13 +27,10 @@ public abstract class SplashScreenMixin extends Overlay {
 
     @Inject(method = "render", at = @At("HEAD"))
     public void render(DrawContext drawContext, int i, int j, float f, CallbackInfo ci) {
-        //LOGO =  Identifier.of("catclient","icon.png");
-        Identifier BG = Identifier.of("catclient", "waves.png");
         MOJANG_RED = ColorHelper.getArgb(255, 30, 30, 46);
         MONOCHROME_BLACK = ColorHelper.getArgb(255, 30, 30, 46);
         if (this.reloadCompleteTime > 1) {
             this.client.setOverlay(null);
-            MainMenuButtons.reloadComplete = true;
         }
     }
 }

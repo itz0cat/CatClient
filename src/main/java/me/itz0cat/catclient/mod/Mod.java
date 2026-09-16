@@ -2,40 +2,45 @@ package me.itz0cat.catclient.mod;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
-import imgui.ImGui;
-import imgui.ImVec2;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiWindowFlags;
 import me.itz0cat.catclient.CatClient;
-import me.itz0cat.catclient.gui.ImguiLoader;
-import me.itz0cat.catclient.mod.setting.RenderableSetting;
+import me.itz0cat.catclient.hud.HudPosition;
 import me.itz0cat.catclient.mod.setting.Setting;
 import net.minecraft.client.MinecraftClient;
 import org.jetbrains.annotations.Nullable;
-
-import static me.itz0cat.catclient.menu.ModSettings.text;
 
 public abstract class Mod {
     protected MinecraftClient mc = MinecraftClient.getInstance();
 
     public String name, description, icon;
+    public Category category = Category.HUD;
     public List<Setting> settings = new ArrayList<>();
     private boolean enabled;
     private boolean showOptions;
     public boolean isFocused = false;
-    public ImVec2 updatedPos = new ImVec2(0, 0);
-    public ImVec2 position = new ImVec2();
+    public HudPosition updatedPos = new HudPosition(0, 0);
+    public HudPosition position = new HudPosition();
 
     public Mod(String name, String description, @Nullable String... icon) {
-        if(icon != null) this.icon = icon[0];
+        if (icon != null && icon.length > 0) this.icon = icon[0];
         this.name = name;
         this.description = description;
+        this.category = assignCategory(name);
 
         enabled = false;
         showOptions = false;
+    }
+
+    private Category assignCategory(String modName) {
+        if (modName == null) return Category.HUD;
+        return switch (modName) {
+            case "Aim Assist", "Hitbox", "Reach Display" -> Category.COMBAT;
+            case "Toggle Sprint", "Toggle Sneak" -> Category.MOVEMENT;
+            case "Block Overlay", "Fullbright", "Freelook", "Hit Color", "Hurt Cam", "Nametags", "Time Changer", "Zoom", "Scoreboard" -> Category.RENDER;
+            case "General Settings" -> Category.SETTINGS;
+            default -> Category.HUD;
+        };
     }
 
     public void addSettings(Setting... settings) {
@@ -121,39 +126,5 @@ public abstract class Mod {
         for (Setting setting : settings) {
             setting.name = null;
         }
-    }
-
-    public void renderSettings(double @Nullable ... p) {
-        double percent;
-        if(p == null) percent = 1;
-        else percent = p[0];
-        text("Settings", 1f);
-
-        ImGui.getStyle().setChildRounding(15f);
-        ImGui.getStyle().setWindowPadding(15f, 15f);
-
-        ImGui.pushFont(ImguiLoader.getDosisFont32());
-        ImGui.pushStyleColor(ImGuiCol.WindowBg, 0.06f, 0.06f, 0.1f, (float) (0.6f * percent));
-        ImGui.pushStyleColor(ImGuiCol.ChildBg, 0.07f, 0.07f, 0.11f, (float) (0.7f * percent));
-        //ImGui.beginChild("Settings", 0, 0, false, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollWithMouse);
-        ImVec2 pos = ImGui.getCursorPos();
-        //ImGui.setCursorPos(pos.x, pos.y + 20);
-        ImGui.indent(30f);
-
-        for (Setting setting : settings) {
-            if (setting instanceof RenderableSetting renderableSetting) {
-                renderableSetting.render();
-            }
-        }
-
-        ImGui.unindent();
-        //ImGui.endChild();
-        ImGui.popStyleColor(8);
-        ImGui.popFont();
-        ImGui.getStyle().setChildRounding(4f);
-        ImGui.getStyle().setFramePadding(4f,4f);
-        ImGui.getStyle().setItemSpacing(4f,4f);
-        ImGui.getStyle().setWindowPadding(4f,4f);
-
     }
 }

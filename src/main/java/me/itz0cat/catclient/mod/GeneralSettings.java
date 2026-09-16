@@ -1,21 +1,10 @@
 package me.itz0cat.catclient.mod;
 
-import imgui.ImGui;
-import imgui.ImVec2;
-import imgui.flag.ImGuiCol;
-import me.itz0cat.catclient.api.event.events.TickEvent;
-import me.itz0cat.catclient.api.event.orbit.EventHandler;
 import me.itz0cat.catclient.api.font.JColor;
-import me.itz0cat.catclient.gui.ImguiLoader;
-import me.itz0cat.catclient.mod.setting.RenderableSetting;
-import me.itz0cat.catclient.mod.setting.Setting;
 import me.itz0cat.catclient.mod.setting.settings.BooleanSetting;
 import me.itz0cat.catclient.mod.setting.settings.ColorSetting;
 import me.itz0cat.catclient.mod.setting.settings.KeybindSetting;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
-
-import static me.itz0cat.catclient.menu.ModSettings.text;
 
 public class GeneralSettings extends Mod {
     public final ColorSetting mainColor = new ColorSetting("Main Color", this, new JColor(0.00f, 0.78f, 1.00f), false);
@@ -44,60 +33,9 @@ public class GeneralSettings extends Mod {
     public final BooleanSetting stackChatMessages = new BooleanSetting("Stack Chat Messages", this, false);
     public final BooleanSetting enableDiscordRPC = new BooleanSetting("Enable Discord RPC", this, true);
     public final BooleanSetting showAddress = new BooleanSetting("Show Server Address", this, true);
+
     public GeneralSettings() {
-        super("General", "General client settings.", "\uF085");
-    }
-
-    @Override
-    public void renderSettings(double @Nullable ... p) {
-        double percent;
-        if(p == null) percent = 1;
-        else percent = p[0];
-        text("General Settings", 1f);
-
-        ImGui.getStyle().setChildRounding(15f);
-        ImGui.getStyle().setWindowPadding(15f, 15f);
-
-        ImGui.pushFont(ImguiLoader.getDosisFont32());
-        ImGui.pushStyleColor(ImGuiCol.WindowBg, 0.06f, 0.06f, 0.1f, (float) (0.6f * percent));
-        ImGui.pushStyleColor(ImGuiCol.ChildBg, 0.07f, 0.07f, 0.11f, (float) (0.7f * percent));
-        ImGui.indent(30f);
-        mainColor.render();
-        openMenu.render();
-        fullbright.render();
-        showOwnNametag.render();
-        minimalViewBob.render();
-        lowShield.render();
-        lowFire.render();
-        showClientBadges.render();
-        showCosmetics.render();
-        numericalPing.render();
-        smallPing.render();
-        ImGui.unindent(30f);
-        text("Mods", 1f);
-        ImGui.indent(30f);
-        showInChat.render();
-        showInInventory.render();
-        ImGui.unindent(30f);
-        text("Chat", 1f);
-        ImGui.indent(30f);
-        unlimitedChatHistory.render();
-        stackChatMessages.render();
-        ImGui.unindent(30f);
-        text("Darken Background", 1f);
-        ImGui.indent(30f);
-        darkenInventory.render();
-        ImGui.unindent(30f);
-        text("Discord", 1f);
-        ImGui.indent(30f);
-        enableDiscordRPC.render();
-        showAddress.render();
-        ImGui.unindent(30f);
-        ImGui.popStyleColor(8);
-        ImGui.popFont();
-        ImGui.getStyle().setChildRounding(4f);
-        ImGui.getStyle().setFramePadding(4f,4f);
-        ImGui.getStyle().setItemSpacing(4f,4f);
-        ImGui.getStyle().setWindowPadding(4f,4f);
+        super("General Settings", "General client settings.", "\uF085");
+        category = Category.SETTINGS;
     }
 }

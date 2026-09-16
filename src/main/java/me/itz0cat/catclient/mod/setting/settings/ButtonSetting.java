@@ -1,11 +1,9 @@
 package me.itz0cat.catclient.mod.setting.settings;
 
-import imgui.ImGui;
 import me.itz0cat.catclient.mod.Mod;
-import me.itz0cat.catclient.mod.setting.RenderableSetting;
 import me.itz0cat.catclient.mod.setting.Setting;
 
-public class ButtonSetting extends Setting implements RenderableSetting {
+public class ButtonSetting extends Setting {
     public Runnable runnable;
     public boolean sameLine;
 
@@ -15,7 +13,7 @@ public class ButtonSetting extends Setting implements RenderableSetting {
         this.runnable = runnable;
         this.sameLine = false;
 
-        parent.addSettings(this);
+        if (parent != null) parent.addSettings(this);
     }
 
     public ButtonSetting(String name, Mod parent, Runnable runnable, boolean sameLine) {
@@ -24,19 +22,12 @@ public class ButtonSetting extends Setting implements RenderableSetting {
         this.runnable = runnable;
         this.sameLine = sameLine;
 
-        parent.addSettings(this);
+        if (parent != null) parent.addSettings(this);
     }
 
-    @Override
-    public void render() {
-        ImGui.pushID(parent.getName()+"/"+this.getName());
-
-        if (ImGui.button(name))
+    public void click() {
+        if (runnable != null) {
             runnable.run();
-
-        if (sameLine)
-            ImGui.sameLine();
-
-        ImGui.popID();
+        }
     }
 }
