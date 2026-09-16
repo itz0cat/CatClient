@@ -25,12 +25,13 @@ public class MouseMixin {
     }
 
     @Inject(method = "updateMouse", at = @At("HEAD"))
-    private void onMouseUpdate(CallbackInfo ci) {
+    private void onMouseUpdate(double timeDelta, CallbackInfo ci) {
         CatClient.EVENTBUS.post(MouseUpdateEvent.get());
     }
 
     @Inject(method = "onMouseButton", at = @At("HEAD"))
-    private void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
+    private void onMouseButton(long window, net.minecraft.client.input.MouseInput input, int action, CallbackInfo ci) {
+        int button = input.button();
         CatClient.EVENTBUS.post(MouseButtonEvent.get(button, action));
 
         switch (button) {

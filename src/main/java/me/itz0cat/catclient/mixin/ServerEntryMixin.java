@@ -15,11 +15,11 @@ public class ServerEntryMixin {
     @Shadow
     private @Final ServerInfo server;
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)V", ordinal = 0))
-    public void changeText(DrawContext instance, TextRenderer textRenderer, String string, int i, int j, int k, boolean bl) {
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;III)V", ordinal = 0))
+    public void changeText(DrawContext instance, TextRenderer textRenderer, String string, int i, int j, int k) {
         if (server != null && CatClient.starServers.contains(server.address.toLowerCase())) {
             instance.drawText(textRenderer, "★", i - 50, j + 14, 16776960, true);
         }
-        instance.drawText(textRenderer, string, i, j, k, bl);
+        instance.drawTextWithShadow(textRenderer, string, i, j, k);
     }
 }

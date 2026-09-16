@@ -8,10 +8,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(RenderSystem.class)
 public class RenderSystemMixin {
+    /*
     @Inject(at = @At("HEAD"), method = "flipFrame", remap = false)
     private static void runTickTail(CallbackInfo ci) {
         CatClient.EVENTBUS.post(RenderTickEvent.get());
     }
+    */
 }

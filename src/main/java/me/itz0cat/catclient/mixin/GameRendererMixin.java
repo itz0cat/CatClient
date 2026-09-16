@@ -21,6 +21,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerLikeState;
+
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/RotationAxis;rotationDegrees(F)Lorg/joml/Quaternionf;"), method = "tiltViewWhenHurt", require = 4)
@@ -42,20 +45,23 @@ public class GameRendererMixin {
     }
 
     @Inject(at = @At("RETURN"), method = "getFov", cancellable = true)
-    public void onGetFOVModifier(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Double> cir) {
-        double defaultFOV = cir.getReturnValue();
-        cir.setReturnValue(CatClient.modManager().getMod(ZoomMod.class).getFOV(defaultFOV));
+    public void onGetFOVModifier(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Float> cir) {
+        float defaultFOV = cir.getReturnValue();
+        cir.setReturnValue((float) CatClient.modManager().getMod(ZoomMod.class).getFOV(defaultFOV));
     }
 
-    @Inject(method = "bobView", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    private void minimalViewBob(MatrixStack matrices, float tickDelta, CallbackInfo ci, PlayerEntity playerEntity, float f, float g, float h) {
+    @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
+    private void minimalViewBob(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
         if (CatClient.modManager().getMod(GeneralSettings.class).minimalViewBob.isEnabled()) {
-            g /= 2;
-            h /= 2;
-            matrices.translate(MathHelper.sin(g * (float) Math.PI) * h * 0.5F, -Math.abs(MathHelper.cos(g * (float) Math.PI) * h), 0.0F);
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.sin(g * (float) Math.PI) * h * 3.0F));
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(Math.abs(MathHelper.cos(g * (float) Math.PI - 0.2F) * h) * 5.0F));
-            ci.cancel();
+            if (CatClient.mc.getCameraEntity() instanceof AbstractClientPlayerEntity player) {
+                ClientPlayerLikeState state = player.getState();
+                float f = state.getReverseLerpedDistanceMoved(tickDelta);
+                float g = state.lerpMovement(tickDelta) / 2.0F;
+                matrices.translate(MathHelper.sin(f * (float) Math.PI) * g * 0.5F, -Math.abs(MathHelper.cos(f * (float) Math.PI) * g), 0.0F);
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.sin(f * (float) Math.PI) * g * 3.0F));
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(Math.abs(MathHelper.cos(f * (float) Math.PI - 0.2F) * g) * 5.0F));
+                ci.cancel();
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Keyboard.class)
 public class KeyboardMixin {
     @Inject(method = "onKey", at = @At("HEAD"))
-    private void onKeyPress(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
-        CatClient.EVENTBUS.post(KeyPressEvent.get(key, scancode, action, window));
+    private void onKeyPress(long window, int action, net.minecraft.client.input.KeyInput keyInput, CallbackInfo ci) {
+        CatClient.EVENTBUS.post(KeyPressEvent.get(keyInput.key(), keyInput.scancode(), action, window));
     }
 }

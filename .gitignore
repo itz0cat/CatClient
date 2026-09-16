@@ -21,3 +21,4 @@ run/
 *.DS_Store
 Thumbs.db
 *.log
+src/main/java_backup/

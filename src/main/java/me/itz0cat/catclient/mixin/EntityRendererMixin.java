@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/*
 @Mixin(EntityRenderer.class)
 public abstract class EntityRendererMixin<T extends Entity> {
     @Shadow @Final protected EntityRenderManager dispatcher;
@@ -76,3 +77,4 @@ public abstract class EntityRendererMixin<T extends Entity> {
             IndicatorHelper.addBadge(entity, matrixStack, vertexConsumerProvider);
     }
 }
+*/
