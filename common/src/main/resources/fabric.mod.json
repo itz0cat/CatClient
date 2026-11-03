@@ -5,15 +5,10 @@
 	"name": "CatClient (Common)",
 	"description": "Shared code for CatClient versions",
 	"authors": [
-		"itz0cat",
-		"moehreag"
+		"itz0cat"
 	],
 	"contributors": [
-		"moehreag (AxolotlClient)",
-		"YakisikliBaran",
-		"DragonEggBedrockBreaking",
-		"TheKodeToad",
-		"CornetPanique86"
+		"AxolotlClient Team (Original Client - Special Thanks!)"
 	],
 	"contact": {
 		"homepage": "https://github.com/itz0cat/CatClient",

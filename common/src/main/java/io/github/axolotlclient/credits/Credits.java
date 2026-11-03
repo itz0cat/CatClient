@@ -34,18 +34,8 @@ public class Credits {
 	private static final Collection<Credits> contributors = new LinkedHashSet<>(), otherPeople = new LinkedHashSet<>();
 
 	static {
-		contributor("itz0cat", "CatClient Rebrand & Maintainer", "https://github.com/itz0cat/CatClient");
-		contributor("moehreag", "AxolotlClient Author, Programming", "https://github.com/moehreag");
-		contributor("TheKodeToad", "Contributor", "Motion Blur", "Freelook", "Zoom");
-		contributor("DragonEggBedrockBreaking", "Bugfixes", "Inspiration of new Features");
-		contributor("Astralchroma", "Backend Development", "Backend Hosting");
-		contributor("gart", "gartbin dev and host", "Image sharing help", "https://gart.sh", "Backend developer");
-		contributor("xlingy", "Website author");
-		contributor("DarkKronicle", "Bedwars Overlay", "Author of KronHUD, the best HUD mod!");
-		contributor("Floweynt", "Playerstats command");
-		contributor("XXLSteve", "French Translation");
-
-		otherPerson("AMereBagatelle", "Author of the excellent FabricSkyBoxes Mod");
+		contributor("itz0cat", "CatClient Developer & Maintainer", "https://github.com/itz0cat/CatClient");
+		otherPerson("AxolotlClient Team", "Forked from AxolotlClient", "Special thanks to moehreag and contributors for creating the original client!", "https://codeberg.org/moehreag/AxolotlClient");
 	}
 
 	@Getter

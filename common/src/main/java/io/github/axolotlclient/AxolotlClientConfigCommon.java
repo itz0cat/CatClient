@@ -77,7 +77,7 @@ public abstract class AxolotlClientConfigCommon {
 
 	// options
 
-	public final BooleanOption apiEnabled = new BooleanOption("api_enabled", false);
+	public final BooleanOption apiEnabled = new BooleanOption("api_enabled", true);
 	public final StringOption apiUrl = new StringOption("api.url", "https://catclient-backend.vercel.app/");
 
 	public final BooleanOption showOwnNametag = new BooleanOption("showOwnNametag", false);

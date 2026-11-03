@@ -3,16 +3,12 @@
 	"id": "catclient",
 	"version": "${version}",
 	"name": "CatClient",
-	"description": "Free & Open-Source Minecraft Mod for use in PvP and utility. Fork and rebrand of AxolotlClient by moehreag.",
+	"description": "CatClient — Modern PvP and utility client mod for Minecraft Fabric 1.21.11. Forked from AxolotlClient. Special thanks to moehreag and the original team for creating the original client!",
 	"authors": [
 		"itz0cat"
 	],
 	"contributors": [
-		"moehreag (Original AxolotlClient Author)",
-		"YakisikliBaran",
-		"DragonEggBedrockBreaking",
-		"TheKodeToad",
-		"CornetPanique86"
+		"AxolotlClient Team (Original Client - Special Thanks!)"
 	],
 	"contact": {
 		"homepage": "https://github.com/itz0cat/CatClient",

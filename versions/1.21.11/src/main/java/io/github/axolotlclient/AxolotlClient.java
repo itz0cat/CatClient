@@ -35,8 +35,10 @@ import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.particles.Particles;
+import io.github.axolotlclient.modules.resourcepack.CatResourcePackManager;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
+import io.github.axolotlclient.modules.updater.CatAutoUpdater;
 import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.notifications.Notifications;
@@ -67,6 +69,9 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 
 		init(Notifications.getInstance());
 		new API(new StatusUpdateProviderImpl());
+
+		CatAutoUpdater.init();
+		CatResourcePackManager.init();
 
 		Events.END_RESOURCE_RELOAD.register(() -> {
 			PackDisplayHud hud = (PackDisplayHud) HudManager.getInstance().get(PackDisplayHud.ID);
