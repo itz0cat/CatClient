@@ -75,10 +75,7 @@ dependencies {
 
 	compileOnly("maven.modrinth:e4mc:6.1.2-fabric")
 
-	implementation("net.hypixel:mod-api:1.0.1")
-	include(modImplementation("maven.modrinth:hypixel-mod-api:1.0.1+build.1+mc1.21")!!)
-
-	include(modImplementation(files("libs/forcecloseloadingscreen-2.3.4.jar"))!!)
+	include(modImplementation("maven.modrinth:forcecloseworldloadingscreen:2.3.4")!!)
 }
 
 tasks.processResources {

@@ -33,7 +33,7 @@ import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.blur.MotionBlur;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
-import io.github.axolotlclient.modules.hypixel.HypixelMods;
+import io.github.axolotlclient.modules.bananasmp.BananaSMPMods;
 import io.github.axolotlclient.modules.particles.Particles;
 import io.github.axolotlclient.modules.resourcepack.CatResourcePackManager;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
@@ -48,7 +48,7 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 
 	private void addBuiltinModules() {
 		registerModule(HudManager.getInstance());
-		registerModule(HypixelMods.getInstance());
+		registerModule(BananaSMPMods.getInstance());
 		registerModule(MotionBlur.getInstance());
 		registerModule(ScrollableTooltips.getInstance());
 		registerModule(Particles.getInstance());
