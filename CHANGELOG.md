@@ -1,5 +1,12 @@
 ## Changelog:
 
+### 1.3.0
+
+- Add "Cheat" section to settings menu with Combat, Misc, Render, and Client sub-sections
+- Add all 46 configurable module toggles ported from Prestige
+- Add script to detect dummy/empty modules across client jars
+- Bump client version to 1.3.0
+
 ### 3.2.2
 
 - (1.8.9) update OSL
