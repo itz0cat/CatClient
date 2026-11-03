@@ -1,18 +1,18 @@
 {
 	"schemaVersion": 1,
-	"id": "axolotlclient-test",
+	"id": "catclient-test",
 	"version": "1.0.0",
-	"name": "Test Mod",
+	"name": "CatClient Test Mod",
 	"description": "",
 	"authors": [
-		"moehreag"
+		"itz0cat"
 	],
 	"contact": {
-		"sources": "https://codeberg.org/AxolotlClient/AxolotlClient-mod",
-		"issues": "https://codeberg.org/AxolotlClient/AxolotlClient-mod/issues"
+		"sources": "https://github.com/itz0cat/CatClient",
+		"issues": "https://github.com/itz0cat/CatClient/issues"
 	},
 	"license": "LGPL-3.0",
-	"icon": "assets/axolotlclient/icon.png",
+	"icon": "assets/catclient/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"client": [
@@ -20,6 +20,6 @@
 		]
 	},
 	"depends": {
-		"axolotlclient": "*"
+		"catclient": "*"
 	}
 }

@@ -1,34 +1,36 @@
 {
 	"schemaVersion": 1,
-	"id": "axolotlclient-common",
+	"id": "catclient-common",
 	"version": "${version}",
-	"name": "AxolotlClient (Common)",
-	"description": "Shared code for AxolotlClient versions",
+	"name": "CatClient (Common)",
+	"description": "Shared code for CatClient versions",
 	"authors": [
+		"itz0cat",
 		"moehreag"
 	],
 	"contributors": [
+		"moehreag (AxolotlClient)",
 		"YakisikliBaran",
 		"DragonEggBedrockBreaking",
 		"TheKodeToad",
 		"CornetPanique86"
 	],
 	"contact": {
-		"homepage": "https://axolotlclient.com/",
-		"sources": "https://codeberg.org/AxolotlClient/AxolotlClient-mod/",
-		"issues": "https://codeberg.org/AxolotlClient/AxolotlClient-mod/issues"
+		"homepage": "https://github.com/itz0cat/CatClient",
+		"sources": "https://github.com/itz0cat/CatClient",
+		"issues": "https://github.com/itz0cat/CatClient/issues"
 	},
 	"license": "LGPL-3.0-or-later",
-	"icon": "assets/axolotlclient/icon.png",
+	"icon": "assets/catclient/icon.png",
 	"environment": "client",
 	"entrypoints": {
 	},
 	"custom": {
 		"modmenu": {
 			"parent": {
-				"id": "axolotlclient",
-				"name": "AxolotlClient",
-				"icon": "assets/axolotlclient/icon.png"
+				"id": "catclient",
+				"name": "CatClient",
+				"icon": "assets/catclient/icon.png"
 			},
 			"badges": ["library"]
 		}

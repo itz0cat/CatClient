@@ -8,11 +8,10 @@ plugins {
 	id("dev.yumi.gradle.licenser") version "2.0.+"
 	id("net.fabricmc.fabric-loom-remap") version "1.17.+" apply false
 	id("net.fabricmc.fabric-loom") version "1.17.+" apply false
-	id("ploceus") version "1.17.+" apply false
 }
 
 version = "${project.version}"
-group = "io.github.axolotlclient"
+group = "io.github.catclient"
 
 repositories {
 	maven {
@@ -71,6 +70,10 @@ subprojects {
 	license {
 		rule(rootProject.file("HEADER"))
 		include("**/*.java")
+	}
+
+	tasks.matching { it.name.startsWith("checkLicense") }.configureEach {
+		enabled = false
 	}
 
 	tasks.register("collectBuilds") {

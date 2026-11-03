@@ -1,0 +1,28 @@
+# CatClient Credits & Attributions
+
+CatClient is a fork of AxolotlClient, licensed under the GNU Lesser General Public License v3.0 (LGPL-3.0).
+
+## CatClient Maintainers
+- itz0cat (CatClient lead developer) - https://github.com/itz0cat
+
+## Original AxolotlClient Authors & Upstream Contributors
+- moehreag (AxolotlClient original creator & primary author) - https://codeberg.org/moehreag
+- Dark_Ender
+- fiphi
+- kikugie
+- Moulberry
+- boomer
+- And all other upstream contributors to AxolotlClient
+
+## Upstream Project
+- AxolotlClient: https://codeberg.org/moehreag/AxolotlClient
+- AxolotlClient-config: https://codeberg.org/moehreag/AxolotlClient-config
+- AxolotlClient-rendering: https://codeberg.org/moehreag/AxolotlClient-rendering
+
+## Third-Party Libraries & Dependencies
+- Fabric Loader & Fabric API (Apache-2.0)
+- Mod Menu by TerraformersMC (MIT)
+- e4mc by Team e4mc (LGPL-3.0 / MIT)
+- World Host by Motschen (LGPL-3.0)
+- Simple Voice Chat by henkelmax (LGPL-3.0)
+- ParchmentMC

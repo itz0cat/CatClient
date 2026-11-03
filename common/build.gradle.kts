@@ -59,49 +59,6 @@ tasks.processResources {
 	filesMatching("fabric.mod.json") {
 		expand("version" to version)
 	}
-	exclude("blobfox_*.png")
-}
-
-tasks.compileJava {
-	inputs.files(sourceSets.main.get().resources.files.filter { it.name.startsWith("blobfox_") })
-	actions.addLast {
-		val foxes = inputs.files.files.filter { it.name.startsWith("blobfox_") }
-		val pride = foxes.first { it.name == "blobfox_pride_128.png" }
-		val trans = foxes.first { it.name == "blobfox_pride_trans_128.png" }
-		outputs.files.files.let { c -> c.forEach {
-			d -> d.walkTopDown().filter { f -> f.name.startsWith("AltIcons") }
-				.forEach {
-					val reader = ClassReader(it.readBytes())
-					val writer = ClassWriter(0)
-					val visitor = object : ClassVisitor(Opcodes.ASM9, writer) {
-					override fun visitMethod(
-						access: Int,
-							name: String?,
-							descriptor: String?,
-							signature: String?,
-							exceptions: Array<out String?>?
-						): MethodVisitor? {
-							val mv = super.visitMethod(access, name, descriptor, signature, exceptions)
-							if (name == "getAltIcon") {
-								return object : MethodVisitor(Opcodes.ASM9, mv) {
-									override fun visitLdcInsn(value: Any?) {
-										super.visitLdcInsn(when (value) {
-											"@FOX_PRIDE@" -> Base64.getEncoder().encodeToString(pride.readBytes())
-											"@FOX_TRANS@" -> Base64.getEncoder().encodeToString(trans.readBytes())
-											else -> value
-										})
-									}
-								}
-							}
-							return mv
-						}
-					}
-					reader.accept(visitor, 0)
-					it.writeBytes(writer.toByteArray())
-				}
-			}
-		}
-	}
 }
 
 tasks.withType(JavaCompile::class).configureEach {
@@ -127,9 +84,9 @@ tasks.shadowJar {
 		exclude(dependency("com.kohlschutter.junixsocket:junixsocket-native-common:.*"))
 	}
 
-	relocate("com.jagrosh", "io.github.axolotlclient.shadow.jagrosh")
-	relocate("com.github.mizosoft", "io.github.axolotlclient.shadow.mizosoft")
-	relocate("io.nayuki", "io.github.axolotlclient.shadow.nayuki")
+	relocate("com.jagrosh", "io.github.catclient.shadow.jagrosh")
+	relocate("com.github.mizosoft", "io.github.catclient.shadow.mizosoft")
+	relocate("io.nayuki", "io.github.catclient.shadow.nayuki")
 
 	append("../LICENSE")
 }

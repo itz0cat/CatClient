@@ -1,7 +1,8 @@
 /*
  * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Modified by CatClient
  *
- * This file is part of AxolotlClient.
+ * This file is part of CatClient.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -77,8 +78,17 @@ public class UUIDHelper {
 	}
 
 	public static UUID fromUndashed(String uuid) {
-		return UUID.fromString(uuid.trim().replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"
-		));
+		if (uuid == null || uuid.isBlank()) {
+			return UUID.randomUUID();
+		}
+		try {
+			if (uuid.contains("-")) {
+				return UUID.fromString(uuid.trim());
+			}
+			return UUID.fromString(uuid.trim().replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
+		} catch (Exception e) {
+			return UUID.nameUUIDFromBytes(uuid.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+		}
 	}
 
 	public static CompletableFuture<Optional<String>> ensureUuidOpt(String nameOrUuid) {
@@ -97,6 +107,9 @@ public class UUIDHelper {
 	}
 
 	public static String toUndashed(UUID uuid) {
+		if (uuid == null) {
+			return API.sanitizeUUID(UUID.randomUUID().toString());
+		}
 		return API.sanitizeUUID(uuid.toString());
 	}
 }

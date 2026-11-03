@@ -1,7 +1,8 @@
 /*
  * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Modified by CatClient
  *
- * This file is part of AxolotlClient.
+ * This file is part of CatClient.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,7 +43,7 @@ public class GlobalDataRequest {
 
 	public static CompletableFuture<GlobalData> get(boolean forceRequest) {
 		return CompletableFuture.supplyAsync(() -> {
-			if (API.getInstance().getApiOptions().enabled.get()) {
+			if (io.github.axolotlclient.AxolotlClientConfigCommon.instance().apiEnabled.get() && API.getInstance().getApiOptions().enabled.get()) {
 				try {
 					lock.acquire();
 				} catch (InterruptedException ignored) {

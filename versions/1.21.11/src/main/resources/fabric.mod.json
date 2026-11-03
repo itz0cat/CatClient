@@ -1,26 +1,27 @@
 {
 	"schemaVersion": 1,
-	"id": "axolotlclient",
+	"id": "catclient",
 	"version": "${version}",
-	"name": "AxolotlClient",
-	"description": "Free & Open-Source Minecraft Mod for use in PvP and other Scenarios",
+	"name": "CatClient",
+	"description": "Free & Open-Source Minecraft Mod for use in PvP and utility. Fork and rebrand of AxolotlClient by moehreag.",
 	"authors": [
-		"moehreag"
+		"itz0cat"
 	],
 	"contributors": [
+		"moehreag (Original AxolotlClient Author)",
 		"YakisikliBaran",
 		"DragonEggBedrockBreaking",
 		"TheKodeToad",
 		"CornetPanique86"
 	],
 	"contact": {
-		"homepage": "https://axolotlclient.com/",
-		"sources": "https://codeberg.org/AxolotlClient/AxolotlClient-mod/",
-		"issues": "https://codeberg.org/AxolotlClient/AxolotlClient-mod/issues"
+		"homepage": "https://github.com/itz0cat/CatClient",
+		"sources": "https://github.com/itz0cat/CatClient",
+		"issues": "https://github.com/itz0cat/CatClient/issues"
 	},
 	"license": "LGPL-3.0-or-later",
-	"icon": "assets/axolotlclient/icon.png",
-	"accessWidener": "axolotlclient.classtweaker",
+	"icon": "assets/catclient/icon.png",
+	"accessWidener": "catclient.classtweaker",
 	"environment": "client",
 	"entrypoints": {
 		"client": [
@@ -34,18 +35,18 @@
 		]
 	},
 	"mixins": [
-		"axolotlclient.mixins.json",
-		"axolotlclient-bridge.mixins.json",
-		"axolotlclient.e4mc.mixins.json"
+		"catclient.mixins.json",
+		"catclient-bridge.mixins.json",
+		"catclient.e4mc.mixins.json"
 	],
 	"custom": {
-		"axolotlclient:bridge_impl_version": "V1_21_11"
+		"catclient:bridge_impl_version": "V1_21_11"
 	},
 	"depends": {
 		"fabricloader": ">=0.18.0",
 		"minecraft": "1.21.11",
 		"fabric-api": "*",
 		"axolotlclientconfig": "*",
-		"axolotlclient-common": "*"
+		"catclient-common": "*"
 	}
 }

@@ -60,7 +60,7 @@ import lombok.Getter;
 import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class AxolotlClientCommon {
-	public static final String MODID = "axolotlclient";
+	public static final String MODID = "catclient";
 	public static final AxoIdentifier BADGE_PATH = AxoIdentifier.of(MODID, "textures/badge.png");
 
 	// static utility methods
@@ -76,7 +76,7 @@ public abstract class AxolotlClientCommon {
 		!FabricLoader.getInstance().isModLoaded("vulkanmod");
 
 	public static final String VERSION = FabricLoader.getInstance()
-		.getModContainer("axolotlclient-common")
+		.getModContainer("catclient-common")
 		.orElseThrow()
 		.getMetadata()
 		.getVersion()
@@ -153,7 +153,7 @@ public abstract class AxolotlClientCommon {
 	private void initConfig() {
 		var configFile = getMainConfigFile();
 		if (Files.notExists(configFile)) {
-			var legacy = new Path[]{resolveConfigFile("axolotlclient.json"), FabricLoader.getInstance().getConfigDir().resolve("AxolotlClient.json")};
+			var legacy = new Path[]{resolveConfigFile("catclient.json"), FabricLoader.getInstance().getConfigDir().resolve("AxolotlClient.json")};
 			for (Path p : legacy) {
 				try {
 					if (Files.exists(p)) {

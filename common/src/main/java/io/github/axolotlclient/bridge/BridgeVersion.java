@@ -49,7 +49,7 @@ public enum BridgeVersion {
 			.getModContainer(AxolotlClientCommon.MODID)
 			.orElseThrow()
 			.getMetadata()
-			.getCustomValue("axolotlclient:bridge_impl_version")
+			.getCustomValue("catclient:bridge_impl_version")
 			.getAsString()
 	);
 

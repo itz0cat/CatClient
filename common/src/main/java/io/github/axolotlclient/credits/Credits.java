@@ -1,7 +1,8 @@
 /*
  * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Modified by CatClient
  *
- * This file is part of AxolotlClient.
+ * This file is part of CatClient.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,7 +34,8 @@ public class Credits {
 	private static final Collection<Credits> contributors = new LinkedHashSet<>(), otherPeople = new LinkedHashSet<>();
 
 	static {
-		contributor("moehreag", "Author, Programming", "https://github.com/moehreag");
+		contributor("itz0cat", "CatClient Rebrand & Maintainer", "https://github.com/itz0cat/CatClient");
+		contributor("moehreag", "AxolotlClient Author, Programming", "https://github.com/moehreag");
 		contributor("TheKodeToad", "Contributor", "Motion Blur", "Freelook", "Zoom");
 		contributor("DragonEggBedrockBreaking", "Bugfixes", "Inspiration of new Features");
 		contributor("Astralchroma", "Backend Development", "Backend Hosting");

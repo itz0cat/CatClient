@@ -10,15 +10,15 @@ val modmenu = "17.0.0"
 val fapi = "0.141.4+1.21.11"
 group = project.property("maven_group") as String
 version = "${project.property("version")}+$minecraftFriendly"
-base.archivesName = "AxolotlClient"
+base.archivesName = "CatClient"
 
 loom {
-	accessWidenerPath.set(file("src/main/resources/axolotlclient.classtweaker"))
+	accessWidenerPath.set(file("src/main/resources/catclient.classtweaker"))
 	mods {
-		create("axolotlclient") {
+		create("catclient") {
 			sourceSet("main")
 		}
-		create("axolotlclient-test") {
+		create("catclient-test") {
 			sourceSet("test")
 		}
 	}

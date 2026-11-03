@@ -1,7 +1,8 @@
 /*
  * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Modified by CatClient
  *
- * This file is part of AxolotlClient.
+ * This file is part of CatClient.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,7 +32,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class NetworkUtil {
-	private static final String UA_PATTERN = "AxolotlClient/%s Minecraft/%s";
+	private static final String UA_PATTERN = "CatClient/%s Minecraft/%s";
 
 	public String getUserAgent() {
 		return getUserAgent(false);
@@ -40,7 +41,7 @@ public class NetworkUtil {
 	public String getUserAgent(boolean includeContact) {
 		var ua = UA_PATTERN.formatted(AxolotlClientCommon.VERSION, AxolotlClientCommon.GAME_VERSION);
 		if (includeContact) {
-			return ua + " contact: moehreag<at>gmail.com";
+			return ua + " contact: https://github.com/itz0cat/CatClient";
 		}
 		return ua;
 	}
@@ -52,7 +53,7 @@ public class NetworkUtil {
 	public HttpClient createHttpClient(boolean includeContact) {
 		return Methanol.newBuilder().userAgent(getUserAgent(includeContact))
 			.followRedirects(HttpClient.Redirect.NORMAL)
-			.requestTimeout(Duration.ofMinutes(1))
+			.requestTimeout(Duration.ofSeconds(5))
 			.executor(ThreadExecuter.service()).build();
 	}
 }

@@ -1,7 +1,8 @@
 /*
  * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Modified by CatClient
  *
- * This file is part of AxolotlClient.
+ * This file is part of CatClient.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -68,7 +69,7 @@ public abstract class ImageNetworking {
 	}
 
 	protected static Optional<String> urlToId(String url) {
-		if (url.contains("/") && !url.startsWith(Constants.API_URL)) {
+		if (url.contains("/") && !url.startsWith(Constants.getApiUrl())) {
 			return Optional.empty();
 		}
 		Matcher matcher = URL_PATTERN.matcher(url);

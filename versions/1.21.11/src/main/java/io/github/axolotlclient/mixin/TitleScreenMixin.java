@@ -85,23 +85,25 @@ public abstract class TitleScreenMixin extends Screen {
 			}
 		}
 
-		ThreadExecuter.scheduleTask(() -> GlobalDataRequest.get().thenAccept(data -> {
-			int buttonY = 10;
-			if (APIOptions.getInstance().updateNotifications.get() &&
-				data.success() &&
-				data.latestVersion().isNewerThan(AxolotlClient.VERSION)) {
-				addRenderableWidget(Button.builder(Component.translatable("api.new_version_available"),
-						ConfirmLinkScreen.confirmLink(this, "https://modrinth.com/mod/axolotlclient/versions"))
-					.bounds(width - 90, buttonY, 80, 20).build());
-				buttonY += 24;
-			}
-			if (APIOptions.getInstance().displayNotes.get() &&
-				data.success() && !data.notes().isEmpty()) {
-				addRenderableWidget(Button.builder(Component.translatable("api.notes"), buttonWidget ->
-						minecraft.setScreen(new NewsScreen(this)))
-					.bounds(width - 90, buttonY, 80, 20).build());
-			}
-		}));
+		if (AxolotlClientConfigCommon.instance().apiEnabled.get()) {
+			ThreadExecuter.scheduleTask(() -> GlobalDataRequest.get().thenAccept(data -> {
+				int buttonY = 10;
+				if (APIOptions.getInstance().updateNotifications.get() &&
+					data.success() &&
+					data.latestVersion().isNewerThan(AxolotlClient.VERSION)) {
+					addRenderableWidget(Button.builder(Component.translatable("api.new_version_available"),
+							ConfirmLinkScreen.confirmLink(this, "https://github.com/itz0cat/CatClient/releases"))
+						.bounds(width - 90, buttonY, 80, 20).build());
+					buttonY += 24;
+				}
+				if (APIOptions.getInstance().displayNotes.get() &&
+					data.success() && !data.notes().isEmpty()) {
+					addRenderableWidget(Button.builder(Component.translatable("api.notes"), buttonWidget ->
+							minecraft.setScreen(new NewsScreen(this)))
+						.bounds(width - 90, buttonY, 80, 20).build());
+				}
+			}));
+		}
 	}
 
 	@Inject(method = "realmsNotificationsEnabled", at = @At("HEAD"), cancellable = true)
@@ -125,7 +127,7 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)V"), index = 1)
 	private String axolotlclient$setVersionText(String s) {
-		return "Minecraft " + SharedConstants.getCurrentVersion().name() + "/AxolotlClient "
+		return "Minecraft " + SharedConstants.getCurrentVersion().name() + "/CatClient "
 			+ AxolotlClient.VERSION;
 	}
 
@@ -138,7 +140,7 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@Inject(method = "init", at = @At("HEAD"))
 	private void checkAPIStart(CallbackInfo ci) {
-		if (!API.getInstance().isSocketConnected() && !Auth.getInstance().getCurrent().isOffline()) {
+		if (AxolotlClientConfigCommon.instance().apiEnabled.get() && !API.getInstance().isSocketConnected()) {
 			API.getInstance().startup(Auth.getInstance().getCurrent());
 		}
 	}

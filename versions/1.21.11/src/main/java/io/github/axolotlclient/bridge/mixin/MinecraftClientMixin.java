@@ -167,8 +167,13 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 	public AxoSession br$getSession() {
-		// TODO... -?
-		return new AxoSession(user.getName(), user.getProfileId().toString(), user.getAccessToken());
+		if (user == null) {
+			return new AxoSession("Player", java.util.UUID.randomUUID().toString(), "");
+		}
+		String name = user.getName() != null ? user.getName() : "Player";
+		String uuid = user.getProfileId() != null ? user.getProfileId().toString() : java.util.UUID.nameUUIDFromBytes(name.getBytes(java.nio.charset.StandardCharsets.UTF_8)).toString();
+		String token = user.getAccessToken() != null ? user.getAccessToken() : "";
+		return new AxoSession(name, uuid, token);
 	}
 
 	@Override

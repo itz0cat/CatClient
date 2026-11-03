@@ -1,7 +1,8 @@
 /*
  * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Modified by CatClient
  *
- * This file is part of AxolotlClient.
+ * This file is part of CatClient.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,14 +23,28 @@
 
 package io.github.axolotlclient.api;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class Constants {
 	public final boolean ENABLED = true; // Completely disable these features and hide their existence
-	private final boolean DEVELOPMENT = false;
-	public final String API_URL = DEVELOPMENT ? "http://localhost:8000" : "https://api.axolotlclient.com/v1/";
-	public final String TERMS = "https://axolotlclient.com/terms";
+	public final String DEFAULT_API_URL = "https://catclient-backend.vercel.app/";
+
+	public String getApiUrl() {
+		try {
+			if (AxolotlClientCommon.getInstance() != null && AxolotlClientCommon.getInstance().getConfig() != null) {
+				String configured = AxolotlClientCommon.getInstance().getConfig().apiUrl.get();
+				if (configured != null && !configured.isBlank()) {
+					return configured;
+				}
+			}
+		} catch (Exception ignored) {
+		}
+		return DEFAULT_API_URL;
+	}
+
+	public final String TERMS = "https://github.com/itz0cat/CatClient";
 	public final int STATUS_UPDATE_DELAY = 15; // The Delay between Status updates, in seconds. Discord uses 15 seconds so we will as well.
 	public final boolean TESTING = false; // When set to true, no requests will be sent
 }

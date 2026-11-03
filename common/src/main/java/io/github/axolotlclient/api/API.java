@@ -1,7 +1,8 @@
 /*
  * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Modified by CatClient
  *
- * This file is part of AxolotlClient.
+ * This file is part of CatClient.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,6 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.handlers.*;
 import io.github.axolotlclient.api.requests.AccountSettingsRequest;
 import io.github.axolotlclient.api.requests.GlobalDataRequest;
@@ -132,16 +134,14 @@ public class API {
 		logDetailed("Authenticating with Mojang...");
 
 		var serverId = MojangAuth.authenticate(account);
-
 		if (serverId == null) {
-			logger.error("Failed to authenticate with Mojang!");
-			return CompletableFuture.failedFuture(new UnsupportedOperationException("Failed to authenticate with mojang"));
+			serverId = "offline";
 		}
 
 		logDetailed("Requesting authentication from backend...");
 
 		return get(Request.Route.AUTHENTICATE.builder()
-			.query("username", account.getName())
+			.query("username", account.getName() != null ? account.getName() : "Player")
 			.query("server_id", serverId)
 			.build()).whenComplete((response, throwable) -> {
 
@@ -199,7 +199,7 @@ public class API {
 	}
 
 	private CompletableFuture<Response> request(Request request, String method) {
-		if (!getApiOptions().enabled.get()) {
+		if (!AxolotlClientConfigCommon.instance().apiEnabled.get() || !getApiOptions().enabled.get()) {
 			return CompletableFuture.completedFuture(Response.builder().status(0).body("{\"description\":\"Integration disabled!\"}").build());
 		}
 		if (!getApiOptions().privacyAccepted.get().isAccepted()) {
@@ -271,7 +271,8 @@ public class API {
 	}
 
 	URI getUrl(Request request) {
-		StringBuilder url = new StringBuilder(Constants.API_URL.endsWith("/") ? Constants.API_URL : Constants.API_URL + "/");
+		String base = Constants.getApiUrl();
+		StringBuilder url = new StringBuilder(base.endsWith("/") ? base : base + "/");
 		url.append(request.route().getPath());
 		if (request.path() != null) {
 			for (String p : request.path()) {
@@ -413,14 +414,9 @@ public class API {
 
 	public CompletableFuture<?> startup(Account account) {
 		this.account = account;
-		if (!Constants.ENABLED) {
-			return CompletableFuture.failedFuture(new UnsupportedOperationException("API is disabled at compile-time"));
+		if (!Constants.ENABLED || !AxolotlClientConfigCommon.instance().apiEnabled.get()) {
+			return CompletableFuture.failedFuture(new UnsupportedOperationException("API is disabled"));
 		}
-
-		if (account.isOffline()) {
-			return CompletableFuture.failedFuture(new UnsupportedOperationException("Account is offline"));
-		}
-
 
 		if (apiOptions.enabled.get()) {
 			switch (apiOptions.privacyAccepted.get()) {

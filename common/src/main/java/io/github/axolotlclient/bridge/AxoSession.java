@@ -1,7 +1,8 @@
 /*
  * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ * Modified by CatClient
  *
- * This file is part of AxolotlClient.
+ * This file is part of CatClient.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,5 +23,19 @@
 
 package io.github.axolotlclient.bridge;
 
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
+
 public record AxoSession(String username, String uuid, String accessToken) {
+	public AxoSession {
+		if (username == null) {
+			username = "Player";
+		}
+		if (uuid == null) {
+			uuid = UUID.nameUUIDFromBytes(username.getBytes(StandardCharsets.UTF_8)).toString();
+		}
+		if (accessToken == null) {
+			accessToken = "";
+		}
+	}
 }

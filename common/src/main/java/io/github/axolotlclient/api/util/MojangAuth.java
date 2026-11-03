@@ -1,7 +1,8 @@
 /*
  * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Modified by CatClient
  *
- * This file is part of AxolotlClient.
+ * This file is part of CatClient.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,15 +37,17 @@ import org.apache.commons.lang3.RandomStringUtils;
 public class MojangAuth {
 
 	public static String authenticate(Account account) {
+		if (account == null || account.isOffline() || account.getAuthToken() == null || account.getAuthToken().isBlank()) {
+			return "offline";
+		}
 		try {
-
 			String serverId = minecraftSha1(RandomStringUtils.random(40).getBytes(StandardCharsets.UTF_8));
 			PlatformDispatch.api$login(UUIDHelper.fromUndashed(account.getUuid()), account.getAuthToken(), serverId);
 			return serverId;
 		} catch (Exception e) {
 			API.getInstance().logDetailed("MojangAuth Exception: ", e);
+			return "offline";
 		}
-		return null;
 	}
 
 	private static String minecraftSha1(byte[]... bytes) {

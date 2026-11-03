@@ -1,7 +1,8 @@
 /*
  * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Modified by CatClient
  *
- * This file is part of AxolotlClient.
+ * This file is part of CatClient.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -72,13 +73,26 @@ public class Auth extends Accounts implements Module {
 	public void init() {
 		load();
 		this.msApi = new MSApi(this, () -> mc.options.languageCode);
-		if (isContained(mc.getUser().getSessionId())) {
-			current = getAccounts().stream().filter(account -> account.getUuid().equals(UUIDHelper.toUndashed(mc.getUser().getProfileId()))).toList().getFirst();
-			if (current.needsRefresh()) {
-				current.refresh(msApi).thenRun(this::save);
+		if (mc.getUser() != null && isContained(mc.getUser().getSessionId())) {
+			UUID profileId = mc.getUser().getProfileId();
+			String name = mc.getUser().getName() != null ? mc.getUser().getName() : "Player";
+			String undashed = profileId != null ? UUIDHelper.toUndashed(profileId) : UUIDHelper.toUndashed(UUID.nameUUIDFromBytes(name.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+			var list = getAccounts().stream().filter(account -> account.getUuid().equals(undashed)).toList();
+			if (!list.isEmpty()) {
+				current = list.getFirst();
+				if (current.needsRefresh()) {
+					current.refresh(msApi).thenRun(this::save);
+				}
+			} else {
+				current = new Account(name, undashed, mc.getUser().getAccessToken() != null ? mc.getUser().getAccessToken() : "");
 			}
+		} else if (mc.getUser() != null) {
+			String name = mc.getUser().getName() != null ? mc.getUser().getName() : "Player";
+			UUID profileId = mc.getUser().getProfileId();
+			String undashed = profileId != null ? UUIDHelper.toUndashed(profileId) : UUIDHelper.toUndashed(UUID.nameUUIDFromBytes(name.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+			current = new Account(name, undashed, mc.getUser().getAccessToken() != null ? mc.getUser().getAccessToken() : "");
 		} else {
-			current = new Account(mc.getUser().getName(), UUIDHelper.toUndashed(mc.getUser().getProfileId()), mc.getUser().getAccessToken());
+			current = new Account("Player", UUIDHelper.toUndashed(UUID.nameUUIDFromBytes("Player".getBytes(java.nio.charset.StandardCharsets.UTF_8))), "");
 		}
 
 		category.add(showButton, viewAccounts, skinManagerAnimations);
@@ -120,7 +134,11 @@ public class Auth extends Accounts implements Module {
 				mcAccessor.axolotlclient$setSocialInteractionsManager(new PlayerSocialManager(mc, service));
 				mcAccessor.axolotlclient$setPlayerKeyPairManager(ProfileKeyPairManager.create(service, mc.getUser(), mc.gameDirectory.toPath()));
 				mcAccessor.axolotlclient$setChatReportingContext(ReportingContext.create(ReportEnvironment.local(), service));
-				mcAccessor.axolotlclient$setProfileFuture(CompletableFuture.supplyAsync(() -> mc.services().sessionService().fetchProfile(mc.getUser().getProfileId(), true), Util.nonCriticalIoPool()));
+				if (account.isOffline()) {
+					mcAccessor.axolotlclient$setProfileFuture(CompletableFuture.completedFuture(null));
+				} else {
+					mcAccessor.axolotlclient$setProfileFuture(CompletableFuture.supplyAsync(() -> mc.services().sessionService().fetchProfile(mc.getUser().getProfileId(), true), Util.nonCriticalIoPool()));
+				}
 				((SplashManagerAccessor) mc.getSplashManager()).setUser(mc.getUser());
 				save();
 				current = account;
@@ -153,28 +171,37 @@ public class Auth extends Accounts implements Module {
 	}
 
 	private void loadTexture(String uuid) {
-		if (!loadingTexture.contains(uuid)) {
+		if (uuid != null && !loadingTexture.contains(uuid)) {
 			loadingTexture.add(uuid);
 			ThreadExecuter.scheduleTask(() -> {
-				UUID uUID = UUIDHelper.fromUndashed(uuid);
-				ProfileResult profileResult = mc.services().sessionService().fetchProfile(uUID, false);
-				if (profileResult != null) {
-					mc.getSkinManager().get(profileResult.profile()).thenAccept(playerSkin -> playerSkin.ifPresent(skin -> textures.put(uuid, skin.body().texturePath())));
+				try {
+					UUID uUID = UUIDHelper.fromUndashed(uuid);
+					if (uUID != null && mc.services() != null && mc.services().sessionService() != null) {
+						ProfileResult profileResult = mc.services().sessionService().fetchProfile(uUID, false);
+						if (profileResult != null) {
+							mc.getSkinManager().get(profileResult.profile()).thenAccept(playerSkin -> playerSkin.ifPresent(skin -> textures.put(uuid, skin.body().texturePath())));
+						}
+					}
+				} catch (Exception ignored) {
+				} finally {
+					loadingTexture.remove(uuid);
 				}
-				loadingTexture.remove(uuid);
 			});
 		}
 	}
 
 	public Identifier getSkinTexture(Account account) {
-		return getSkinTexture(account.getUuid());
+		return getSkinTexture(account != null ? account.getUuid() : null);
 	}
 
 	public Identifier getSkinTexture(io.github.axolotlclient.api.types.User user) {
-		return getSkinTexture(user.getUuid());
+		return getSkinTexture(user != null ? user.getUuid() : null);
 	}
 
 	public Identifier getSkinTexture(String uuid) {
+		if (uuid == null) {
+			return DefaultPlayerSkin.get(UUID.randomUUID()).body().texturePath();
+		}
 		if (!textures.containsKey(uuid)) {
 			loadTexture(uuid);
 			return Objects.requireNonNullElseGet(textures.get(uuid), () -> DefaultPlayerSkin.get(UUIDHelper.fromUndashed(uuid)).body().texturePath());

@@ -77,6 +77,9 @@ public abstract class AxolotlClientConfigCommon {
 
 	// options
 
+	public final BooleanOption apiEnabled = new BooleanOption("api_enabled", false);
+	public final StringOption apiUrl = new StringOption("api.url", "https://catclient-backend.vercel.app/");
+
 	public final BooleanOption showOwnNametag = new BooleanOption("showOwnNametag", false);
 	public final BooleanOption useShadows = new BooleanOption("useShadows", false);
 	public final BooleanOption nametagBackground = new BooleanOption("nametagBackground", true);
@@ -144,6 +147,8 @@ public abstract class AxolotlClientConfigCommon {
 		nametagOptions.add(useShadows);
 		nametagOptions.add(nametagBackground);
 
+		general.add(apiEnabled);
+		general.add(apiUrl);
 		general.add(customWindowTitle);
 		general.add(debugLogOutput);
 
