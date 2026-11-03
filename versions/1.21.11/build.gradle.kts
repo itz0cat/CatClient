@@ -27,12 +27,23 @@ loom {
 	}
 }
 
+configurations.all {
+	resolutionStrategy {
+		force("com.terraformersmc:modmenu:17.0.0")
+	}
+}
+
 repositories {
 	maven("https://maven.noxcrew.com/public")
 	maven("https://maven.enginehub.org/repo/")
 }
 
 dependencies {
+	compileOnly("org.projectlombok:lombok:1.18.36")
+	annotationProcessor("org.projectlombok:lombok:1.18.36")
+	testCompileOnly("org.projectlombok:lombok:1.18.36")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.36")
+
 	minecraft("com.mojang:minecraft:$minecraftVersion")
 	mappings(loom.layered {
 		officialMojangMappings {
@@ -78,10 +89,7 @@ tasks.processResources {
 
 tasks.withType(JavaCompile::class).configureEach {
 	options.encoding = "UTF-8"
-
-	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_22)) {
-		options.release = 21
-	}
+	options.release = 21
 }
 
 java {
