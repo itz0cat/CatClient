@@ -77,7 +77,9 @@ public class CatAutoUpdater {
 
 			String tagName = json.get("tag_name").getAsString(); // e.g. "v1.2.0"
 			String latestVer = tagName.startsWith("v") ? tagName.substring(1) : tagName;
-			String currentVer = AxolotlClientCommon.MOD_VERSION; // e.g. "1.2.0"
+			String currentVer = FabricLoader.getInstance().getModContainer("catclient")
+				.map(m -> m.getMetadata().getVersion().getFriendlyString())
+				.orElse(AxolotlClientCommon.VERSION);
 
 			if (!isNewerVersion(latestVer, currentVer)) {
 				return;
