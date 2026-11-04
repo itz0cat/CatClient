@@ -1,5 +1,13 @@
 ## Changelog:
 
+### 1.3.1
+
+- Add dedicated "Cart" sub-section under Cheat menu
+- Add Auto Cart module (bow-triggered immediate rail & TNT cart placement with slot refill)
+- Add Safe Cart module (auto-shielding protective block placement upon incoming cart arrow threat)
+- Add Cart Aura module (proximity minecart detection and rapid spam-break)
+- Bump client version to 1.3.1
+
 ### 1.3.0
 
 - Add "Cheat" section to settings menu with Combat, Misc, Render, and Client sub-sections

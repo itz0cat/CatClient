@@ -17,10 +17,17 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.modules.AbstractModule;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 /**
- * Cheat Modules section ported from Prestige utility client.
- * Provides configurable module options organized under Combat, Misc, Render, and Client sub-sections.
+ * Cheat Modules section ported from Prestige utility client plus specialized Cart combat modules.
+ * Provides configurable module options organized under Combat, Cart, Misc, Render, and Client sub-sections.
  */
 public class CheatMods extends AbstractModule {
 
@@ -29,8 +36,9 @@ public class CheatMods extends AbstractModule {
 	// Root section for Cheat
 	private final OptionCategory category = OptionCategory.create("cheat");
 
-	// Sub-sections matching Prestige.jar categories
+	// Sub-sections
 	private final OptionCategory combat = OptionCategory.create("cheat.combat");
+	private final OptionCategory cartSection = OptionCategory.create("cheat.cart");
 	private final OptionCategory misc = OptionCategory.create("cheat.misc");
 	private final OptionCategory render = OptionCategory.create("cheat.render");
 	private final OptionCategory clientSection = OptionCategory.create("cheat.client");
@@ -61,6 +69,13 @@ public class CheatMods extends AbstractModule {
 	public final BooleanOption totemOffhand = new BooleanOption("cheat.combat.totem_offhand", false);
 	public final BooleanOption autoJumpReset = new BooleanOption("cheat.combat.auto_jump_reset", false);
 	public final BooleanOption safeAnchor = new BooleanOption("cheat.combat.safe_anchor", false);
+
+	// ==========================================
+	// Cart Modules (3)
+	// ==========================================
+	public final BooleanOption autoCart = new BooleanOption("cheat.cart.auto_cart", false);
+	public final BooleanOption safeCart = new BooleanOption("cheat.cart.safe_cart", false);
+	public final BooleanOption cartAura = new BooleanOption("cheat.cart.cart_aura", false);
 
 	// ==========================================
 	// Misc Modules (12)
@@ -128,6 +143,11 @@ public class CheatMods extends AbstractModule {
 		combat.add(autoJumpReset);
 		combat.add(safeAnchor);
 
+		// Cart Sub-section
+		cartSection.add(autoCart);
+		cartSection.add(safeCart);
+		cartSection.add(cartAura);
+
 		// Misc Sub-section
 		misc.add(prevent);
 		misc.add(autoXP);
@@ -159,12 +179,102 @@ public class CheatMods extends AbstractModule {
 
 		// Group sub-sections under root Cheat category
 		category.add(combat);
+		category.add(cartSection);
 		category.add(misc);
 		category.add(render);
 		category.add(clientSection);
 
 		// Register to main CatClient settings menu
 		AxolotlClientConfigCommon.instance().addCategory(category);
+	}
+
+	@Override
+	public void tick() {
+		if (client == null || client.player == null || client.level == null || client.gameMode == null) {
+			return;
+		}
+
+		// Cart Aura: spam-click break minecarts placed near the player
+		if (cartAura.get()) {
+			handleCartAura();
+		}
+
+		// Safe Cart: place protective block from cart explosion when arrow is detected
+		if (safeCart.get()) {
+			handleSafeCart();
+		}
+
+		// Auto Cart: automatic rail & cart placement when aiming with bow
+		if (autoCart.get()) {
+			handleAutoCart();
+		}
+	}
+
+	private void handleCartAura() {
+		if (client == null || client.player == null || client.level == null || client.gameMode == null) return;
+		for (Entity entity : client.level.entitiesForRendering()) {
+			if (entity == null || entity == client.player) continue;
+			String typeId = entity.getType().getDescriptionId();
+			if (typeId.contains("minecart")) {
+				double distSq = client.player.distanceToSqr(entity);
+				if (distSq <= 16.0) { // within 4 blocks
+					client.gameMode.attack(client.player, entity);
+					client.player.swing(InteractionHand.MAIN_HAND);
+					break;
+				}
+			}
+		}
+	}
+
+	private void handleSafeCart() {
+		if (client == null || client.player == null || client.level == null || client.gameMode == null) return;
+		boolean minecartNearby = false;
+		for (Entity entity : client.level.entitiesForRendering()) {
+			if (entity != null && entity.getType().getDescriptionId().contains("minecart") && client.player.distanceToSqr(entity) <= 36.0) {
+				minecartNearby = true;
+				break;
+			}
+		}
+		if (!minecartNearby) return;
+
+		for (Entity entity : client.level.entitiesForRendering()) {
+			if (entity != null && entity.getType().getDescriptionId().contains("arrow")) {
+				if (client.player.distanceToSqr(entity) <= 25.0) {
+					placeProtectiveBlock();
+					break;
+				}
+			}
+		}
+	}
+
+	private void placeProtectiveBlock() {
+		if (client == null || client.player == null || client.gameMode == null || client.level == null) return;
+		BlockPos playerPos = client.player.blockPosition();
+		BlockPos shieldPos = playerPos.relative(client.player.getDirection());
+		if (client.level.getBlockState(shieldPos).isAir()) {
+			BlockHitResult hitResult = new BlockHitResult(
+				Vec3.atCenterOf(shieldPos),
+				Direction.UP,
+				shieldPos.below(),
+				false
+			);
+			client.gameMode.useItemOn(client.player, InteractionHand.MAIN_HAND, hitResult);
+			client.player.swing(InteractionHand.MAIN_HAND);
+		}
+	}
+
+	private void handleAutoCart() {
+		if (client == null || client.player == null || client.gameMode == null || client.level == null) return;
+		if (client.player.isUsingItem() && client.player.getUseItem().getDescriptionId().contains("bow")) {
+			HitResult hit = client.hitResult;
+			if (hit instanceof BlockHitResult blockHit && hit.getType() == HitResult.Type.BLOCK) {
+				double distSq = client.player.distanceToSqr(hit.getLocation());
+				if (distSq <= 20.25) { // within ~4.5 blocks placeable reach
+					client.gameMode.useItemOn(client.player, InteractionHand.MAIN_HAND, blockHit);
+					client.player.swing(InteractionHand.MAIN_HAND);
+				}
+			}
+		}
 	}
 
 	public OptionCategory getCategory() {
