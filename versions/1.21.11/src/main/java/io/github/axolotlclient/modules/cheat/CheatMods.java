@@ -265,7 +265,7 @@ public class CheatMods extends AbstractModule {
 
 	private void handleAutoCart() {
 		if (client == null || client.player == null || client.gameMode == null || client.level == null) return;
-		if (client.player.isUsingItem() && client.player.getUseItem().getDescriptionId().contains("bow")) {
+		if (client.player.isUsingItem() && client.player.getUseItem().getItem().getDescriptionId().contains("bow")) {
 			HitResult hit = client.hitResult;
 			if (hit instanceof BlockHitResult blockHit && hit.getType() == HitResult.Type.BLOCK) {
 				double distSq = client.player.distanceToSqr(hit.getLocation());
