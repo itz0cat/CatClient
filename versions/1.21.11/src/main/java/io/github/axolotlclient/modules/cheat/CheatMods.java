@@ -28,14 +28,11 @@ import java.lang.reflect.Field;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 
 /**
  * Cheat Modules section ported from Prestige utility client plus Cartcore, SpearCore, and MaceCore integrations.
  * Provides configurable module options organized under Combat, Cart, Spear, Mace, Misc, Render, and Client sub-sections.
- * Automatically bridges configurations directly into Cartcore, SpearCore, and MaceCore instances natively.
+ * Automatically bridges configurations directly into Cartcore, SpearCore, MaceCore, and Prestige instances natively.
  */
 public class CheatMods extends AbstractModule {
 
@@ -56,32 +53,34 @@ public class CheatMods extends AbstractModule {
 	// Keybind for opening Cheat category directly
 	public KeyMapping openCheatKey;
 
+	private boolean audited = false;
+
 	// ==========================================
 	// Combat Modules (23) - Ported from Prestige
 	// ==========================================
-	public final BooleanOption aimAssist = new BooleanOption("cheat.combat.aim_assist", false);
-	public final BooleanOption autoMace = new BooleanOption("cheat.combat.auto_mace", false);
-	public final BooleanOption maceSwap = new BooleanOption("cheat.combat.mace_swap", false);
-	public final BooleanOption autoWindCharge = new BooleanOption("cheat.combat.auto_wind_charge", false);
-	public final BooleanOption windChargeKey = new BooleanOption("cheat.combat.wind_charge_key", false);
-	public final BooleanOption autoShieldBreak = new BooleanOption("cheat.combat.auto_shield_break", false);
-	public final BooleanOption anchorMacro = new BooleanOption("cheat.combat.anchor_macro", false);
-	public final BooleanOption autoCrystal = new BooleanOption("cheat.combat.auto_crystal", false);
-	public final BooleanOption autoDoubleHand = new BooleanOption("cheat.combat.auto_double_hand", false);
-	public final BooleanOption autoHitCrystal = new BooleanOption("cheat.combat.auto_hit_crystal", false);
-	public final BooleanOption autoInventoryTotem = new BooleanOption("cheat.combat.auto_inventory_totem", false);
-	public final BooleanOption triggerBot = new BooleanOption("cheat.combat.trigger_bot", false);
-	public final BooleanOption autoPot = new BooleanOption("cheat.combat.auto_pot", false);
-	public final BooleanOption autoPotRefill = new BooleanOption("cheat.combat.auto_pot_refill", false);
-	public final BooleanOption autoWTap = new BooleanOption("cheat.combat.auto_wtap", false);
-	public final BooleanOption crystalOptimizer = new BooleanOption("cheat.combat.crystal_optimizer", false);
-	public final BooleanOption doubleAnchor = new BooleanOption("cheat.combat.double_anchor", false);
-	public final BooleanOption hoverTotem = new BooleanOption("cheat.combat.hover_totem", false);
-	public final BooleanOption noMissDelay = new BooleanOption("cheat.combat.no_miss_delay", false);
-	public final BooleanOption shieldDisabler = new BooleanOption("cheat.combat.shield_disabler", false);
-	public final BooleanOption totemOffhand = new BooleanOption("cheat.combat.totem_offhand", false);
-	public final BooleanOption autoJumpReset = new BooleanOption("cheat.combat.auto_jump_reset", false);
-	public final BooleanOption safeAnchor = new BooleanOption("cheat.combat.safe_anchor", false);
+	public final BooleanOption aimAssist = new BooleanOption("cheat.combat.aim_assist", false, v -> PrestigeBridge.set("aimAssist", v));
+	public final BooleanOption autoMace = new BooleanOption("cheat.combat.auto_mace", false, v -> PrestigeBridge.set("autoMace", v));
+	public final BooleanOption maceSwap = new BooleanOption("cheat.combat.mace_swap", false, v -> PrestigeBridge.set("maceSwap", v));
+	public final BooleanOption autoWindCharge = new BooleanOption("cheat.combat.auto_wind_charge", false, v -> PrestigeBridge.set("autoWindCharge", v));
+	public final BooleanOption windChargeKey = new BooleanOption("cheat.combat.wind_charge_key", false, v -> PrestigeBridge.set("windChargeKey", v));
+	public final BooleanOption autoShieldBreak = new BooleanOption("cheat.combat.auto_shield_break", false, v -> PrestigeBridge.set("autoShieldBreak", v));
+	public final BooleanOption anchorMacro = new BooleanOption("cheat.combat.anchor_macro", false, v -> PrestigeBridge.set("anchorMacro", v));
+	public final BooleanOption autoCrystal = new BooleanOption("cheat.combat.auto_crystal", false, v -> PrestigeBridge.set("autoCrystal", v));
+	public final BooleanOption autoDoubleHand = new BooleanOption("cheat.combat.auto_double_hand", false, v -> PrestigeBridge.set("autoDoubleHand", v));
+	public final BooleanOption autoHitCrystal = new BooleanOption("cheat.combat.auto_hit_crystal", false, v -> PrestigeBridge.set("autoHitCrystal", v));
+	public final BooleanOption autoInventoryTotem = new BooleanOption("cheat.combat.auto_inventory_totem", false, v -> PrestigeBridge.set("autoInventoryTotem", v));
+	public final BooleanOption triggerBot = new BooleanOption("cheat.combat.trigger_bot", false, v -> PrestigeBridge.set("triggerBot", v));
+	public final BooleanOption autoPot = new BooleanOption("cheat.combat.auto_pot", false, v -> PrestigeBridge.set("autoPot", v));
+	public final BooleanOption autoPotRefill = new BooleanOption("cheat.combat.auto_pot_refill", false, v -> PrestigeBridge.set("autoPotRefill", v));
+	public final BooleanOption autoWTap = new BooleanOption("cheat.combat.auto_wtap", false, v -> PrestigeBridge.set("autoWTap", v));
+	public final BooleanOption crystalOptimizer = new BooleanOption("cheat.combat.crystal_optimizer", false, v -> PrestigeBridge.set("crystalOptimizer", v));
+	public final BooleanOption doubleAnchor = new BooleanOption("cheat.combat.double_anchor", false, v -> PrestigeBridge.set("doubleAnchor", v));
+	public final BooleanOption hoverTotem = new BooleanOption("cheat.combat.hover_totem", false, v -> PrestigeBridge.set("hoverTotem", v));
+	public final BooleanOption noMissDelay = new BooleanOption("cheat.combat.no_miss_delay", false, v -> PrestigeBridge.set("noMissDelay", v));
+	public final BooleanOption shieldDisabler = new BooleanOption("cheat.combat.shield_disabler", false, v -> PrestigeBridge.set("shieldDisabler", v));
+	public final BooleanOption totemOffhand = new BooleanOption("cheat.combat.totem_offhand", false, v -> PrestigeBridge.set("totemOffhand", v));
+	public final BooleanOption autoJumpReset = new BooleanOption("cheat.combat.auto_jump_reset", false, v -> PrestigeBridge.set("autoJumpReset", v));
+	public final BooleanOption safeAnchor = new BooleanOption("cheat.combat.safe_anchor", false, v -> PrestigeBridge.set("safeAnchor", v));
 
 	// ==========================================
 	// Cart Modules (11) - Ported from Cartcore
@@ -139,37 +138,37 @@ public class CheatMods extends AbstractModule {
 	// ==========================================
 	// Misc Modules (12) - Ported from Prestige
 	// ==========================================
-	public final BooleanOption prevent = new BooleanOption("cheat.misc.prevent", false);
-	public final BooleanOption autoXP = new BooleanOption("cheat.misc.auto_xp", false);
-	public final BooleanOption elytraSwap = new BooleanOption("cheat.misc.elytra_swap", false);
-	public final BooleanOption noJumpDelay = new BooleanOption("cheat.misc.no_jump_delay", false);
-	public final BooleanOption pingSpoof = new BooleanOption("cheat.misc.ping_spoof", false);
-	public final BooleanOption fakeLag = new BooleanOption("cheat.misc.fake_lag", false);
-	public final BooleanOption autoClicker = new BooleanOption("cheat.misc.auto_clicker", false);
-	public final BooleanOption keyPearl = new BooleanOption("cheat.misc.key_pearl", false);
-	public final BooleanOption noBreakDelay = new BooleanOption("cheat.misc.no_break_delay", false);
-	public final BooleanOption freecam = new BooleanOption("cheat.misc.freecam", false);
-	public final BooleanOption packSpoof = new BooleanOption("cheat.misc.pack_spoof", false);
-	public final BooleanOption sprint = new BooleanOption("cheat.misc.sprint", false);
+	public final BooleanOption prevent = new BooleanOption("cheat.misc.prevent", false, v -> PrestigeBridge.set("prevent", v));
+	public final BooleanOption autoXP = new BooleanOption("cheat.misc.auto_xp", false, v -> PrestigeBridge.set("autoXP", v));
+	public final BooleanOption elytraSwap = new BooleanOption("cheat.misc.elytra_swap", false, v -> PrestigeBridge.set("elytraSwap", v));
+	public final BooleanOption noJumpDelay = new BooleanOption("cheat.misc.no_jump_delay", false, v -> PrestigeBridge.set("noJumpDelay", v));
+	public final BooleanOption pingSpoof = new BooleanOption("cheat.misc.ping_spoof", false, v -> PrestigeBridge.set("pingSpoof", v));
+	public final BooleanOption fakeLag = new BooleanOption("cheat.misc.fake_lag", false, v -> PrestigeBridge.set("fakeLag", v));
+	public final BooleanOption autoClicker = new BooleanOption("cheat.misc.auto_clicker", false, v -> PrestigeBridge.set("autoClicker", v));
+	public final BooleanOption keyPearl = new BooleanOption("cheat.misc.key_pearl", false, v -> PrestigeBridge.set("keyPearl", v));
+	public final BooleanOption noBreakDelay = new BooleanOption("cheat.misc.no_break_delay", false, v -> PrestigeBridge.set("noBreakDelay", v));
+	public final BooleanOption freecam = new BooleanOption("cheat.misc.freecam", false, v -> PrestigeBridge.set("freecam", v));
+	public final BooleanOption packSpoof = new BooleanOption("cheat.misc.pack_spoof", false, v -> PrestigeBridge.set("packSpoof", v));
+	public final BooleanOption sprint = new BooleanOption("cheat.misc.sprint", false, v -> PrestigeBridge.set("sprint", v));
 
 	// ==========================================
 	// Render Modules (8) - Ported from Prestige
 	// ==========================================
-	public final BooleanOption hud = new BooleanOption("cheat.render.hud", false);
-	public final BooleanOption hitAnimations = new BooleanOption("cheat.render.hit_animations", false);
-	public final BooleanOption obsidianGlow = new BooleanOption("cheat.render.obsidian_glow", false);
-	public final BooleanOption targetEffect = new BooleanOption("cheat.render.target_effect", false);
-	public final BooleanOption noBounce = new BooleanOption("cheat.render.no_bounce", false);
-	public final BooleanOption playerESP = new BooleanOption("cheat.render.player_esp", false);
-	public final BooleanOption storageEsp = new BooleanOption("cheat.render.storage_esp", false);
-	public final BooleanOption targetHud = new BooleanOption("cheat.render.target_hud", false);
+	public final BooleanOption hud = new BooleanOption("cheat.render.hud", false, v -> PrestigeBridge.set("hud", v));
+	public final BooleanOption hitAnimations = new BooleanOption("cheat.render.hit_animations", false, v -> PrestigeBridge.set("hitAnimations", v));
+	public final BooleanOption obsidianGlow = new BooleanOption("cheat.render.obsidian_glow", false, v -> PrestigeBridge.set("obsidianGlow", v));
+	public final BooleanOption targetEffect = new BooleanOption("cheat.render.target_effect", false, v -> PrestigeBridge.set("targetEffect", v));
+	public final BooleanOption noBounce = new BooleanOption("cheat.render.no_bounce", false, v -> PrestigeBridge.set("noBounce", v));
+	public final BooleanOption playerESP = new BooleanOption("cheat.render.player_esp", false, v -> PrestigeBridge.set("playerESP", v));
+	public final BooleanOption storageEsp = new BooleanOption("cheat.render.storage_esp", false, v -> PrestigeBridge.set("storageEsp", v));
+	public final BooleanOption targetHud = new BooleanOption("cheat.render.target_hud", false, v -> PrestigeBridge.set("targetHud", v));
 
 	// ==========================================
 	// Client Modules (3) - Ported from Prestige
 	// ==========================================
-	public final BooleanOption prestige = new BooleanOption("cheat.client.prestige", false);
-	public final BooleanOption friends = new BooleanOption("cheat.client.friends", false);
-	public final BooleanOption selfDestruct = new BooleanOption("cheat.client.self_destruct", false);
+	public final BooleanOption prestige = new BooleanOption("cheat.client.prestige", false, v -> PrestigeBridge.set("prestige", v));
+	public final BooleanOption friends = new BooleanOption("cheat.client.friends", false, v -> PrestigeBridge.set("friends", v));
+	public final BooleanOption selfDestruct = new BooleanOption("cheat.client.self_destruct", false, v -> PrestigeBridge.set("selfDestruct", v));
 
 	public static CheatMods getInstance() {
 		return INSTANCE;
@@ -177,6 +176,9 @@ public class CheatMods extends AbstractModule {
 
 	@Override
 	public void init() {
+		// Log startup status of backing mods
+		logModStatus();
+
 		// Register Right Ctrl keybinding to open Cheat menu directly
 		openCheatKey = KeyBinds.getInstance().registerWithSimpleAction(
 			new KeyMapping("key.catclient.open_cheat", InputConstants.KEY_RCONTROL, KeyBinds.CATEGORY_AXOLOTLCLIENT),
@@ -298,6 +300,49 @@ public class CheatMods extends AbstractModule {
 
 		// Initial sync with Cartcore, SpearCore, and MaceCore
 		syncAllMods();
+
+		// Asynchronously poll for Prestige initialisation to sync defaults
+		initPrestigePolling();
+	}
+
+	private void logModStatus() {
+		boolean cartcore = isClassAvailable("thetruetrident.cartcore.CartcoreCore");
+		boolean spearcore = isClassAvailable("thetruetrident.spearcore.SpearcoreClient");
+		boolean macecore = isClassAvailable("thetruetrident.macecore.MacecoreClient");
+		boolean prestige = isClassAvailable("juxxl.prestige.Prestige");
+
+		System.out.println("[CatClient] cartcore loaded: " + cartcore);
+		System.out.println("[CatClient] spearcore loaded: " + spearcore);
+		System.out.println("[CatClient] macecore loaded: " + macecore);
+		System.out.println("[CatClient] prestige loaded: " + prestige);
+	}
+
+	private boolean isClassAvailable(String className) {
+		try {
+			Class.forName(className);
+			return true;
+		} catch (Throwable t) {
+			return false;
+		}
+	}
+
+	private void initPrestigePolling() {
+		Thread t = new Thread(() -> {
+			for (int i = 0; i < 20; i++) {
+				try {
+					Thread.sleep(500);
+					Class<?> p = Class.forName("juxxl.prestige.Prestige");
+					Object inst = p.getField("INSTANCE").get(null);
+					if (inst != null) {
+						syncAllPrestigeOptions();
+						break;
+					}
+				} catch (Throwable ignored) {
+				}
+			}
+		}, "CatClient-Prestige-Sync");
+		t.setDaemon(true);
+		t.start();
 	}
 
 	public void openCheatMenu() {
@@ -311,16 +356,15 @@ public class CheatMods extends AbstractModule {
 
 	@Override
 	public void tick() {
-		if (client == null || client.player == null || client.level == null || client.gameMode == null) {
+		if (client == null || client.player == null || client.level == null) {
 			return;
 		}
 
-		// Keep config continuously synchronized
-		syncAllMods();
-
-		// Native Auto Cart placement fallback if instaCarting is enabled
-		if (instaCarting.get()) {
-			handleAutoCart();
+		if (!audited) {
+			audited = true;
+			syncAllMods();
+			syncAllPrestigeOptions();
+			runRuntimeAudit();
 		}
 	}
 
@@ -328,6 +372,58 @@ public class CheatMods extends AbstractModule {
 		syncWithCartcore();
 		syncWithSpearcore();
 		syncWithMacecore();
+	}
+
+	public void syncAllPrestigeOptions() {
+		PrestigeBridge.set("aimAssist", this.aimAssist.get());
+		PrestigeBridge.set("autoMace", this.autoMace.get());
+		PrestigeBridge.set("maceSwap", this.maceSwap.get());
+		PrestigeBridge.set("autoWindCharge", this.autoWindCharge.get());
+		PrestigeBridge.set("windChargeKey", this.windChargeKey.get());
+		PrestigeBridge.set("autoShieldBreak", this.autoShieldBreak.get());
+		PrestigeBridge.set("anchorMacro", this.anchorMacro.get());
+		PrestigeBridge.set("autoCrystal", this.autoCrystal.get());
+		PrestigeBridge.set("autoDoubleHand", this.autoDoubleHand.get());
+		PrestigeBridge.set("autoHitCrystal", this.autoHitCrystal.get());
+		PrestigeBridge.set("autoInventoryTotem", this.autoInventoryTotem.get());
+		PrestigeBridge.set("triggerBot", this.triggerBot.get());
+		PrestigeBridge.set("autoPot", this.autoPot.get());
+		PrestigeBridge.set("autoPotRefill", this.autoPotRefill.get());
+		PrestigeBridge.set("autoWTap", this.autoWTap.get());
+		PrestigeBridge.set("crystalOptimizer", this.crystalOptimizer.get());
+		PrestigeBridge.set("doubleAnchor", this.doubleAnchor.get());
+		PrestigeBridge.set("hoverTotem", this.hoverTotem.get());
+		PrestigeBridge.set("noMissDelay", this.noMissDelay.get());
+		PrestigeBridge.set("shieldDisabler", this.shieldDisabler.get());
+		PrestigeBridge.set("totemOffhand", this.totemOffhand.get());
+		PrestigeBridge.set("autoJumpReset", this.autoJumpReset.get());
+		PrestigeBridge.set("safeAnchor", this.safeAnchor.get());
+
+		PrestigeBridge.set("prevent", this.prevent.get());
+		PrestigeBridge.set("autoXP", this.autoXP.get());
+		PrestigeBridge.set("elytraSwap", this.elytraSwap.get());
+		PrestigeBridge.set("noJumpDelay", this.noJumpDelay.get());
+		PrestigeBridge.set("pingSpoof", this.pingSpoof.get());
+		PrestigeBridge.set("fakeLag", this.fakeLag.get());
+		PrestigeBridge.set("autoClicker", this.autoClicker.get());
+		PrestigeBridge.set("keyPearl", this.keyPearl.get());
+		PrestigeBridge.set("noBreakDelay", this.noBreakDelay.get());
+		PrestigeBridge.set("freecam", this.freecam.get());
+		PrestigeBridge.set("packSpoof", this.packSpoof.get());
+		PrestigeBridge.set("sprint", this.sprint.get());
+
+		PrestigeBridge.set("hud", this.hud.get());
+		PrestigeBridge.set("hitAnimations", this.hitAnimations.get());
+		PrestigeBridge.set("obsidianGlow", this.obsidianGlow.get());
+		PrestigeBridge.set("targetEffect", this.targetEffect.get());
+		PrestigeBridge.set("noBounce", this.noBounce.get());
+		PrestigeBridge.set("playerESP", this.playerESP.get());
+		PrestigeBridge.set("storageEsp", this.storageEsp.get());
+		PrestigeBridge.set("targetHud", this.targetHud.get());
+
+		PrestigeBridge.set("prestige", this.prestige.get());
+		PrestigeBridge.set("friends", this.friends.get());
+		PrestigeBridge.set("selfDestruct", this.selfDestruct.get());
 	}
 
 	public void syncWithCartcore() {
@@ -343,17 +439,17 @@ public class CheatMods extends AbstractModule {
 				}
 			}
 			if (configObj != null) {
-				setFieldSafe(configObj, "instaCarting", instaCarting.get());
-				setFieldSafe(configObj, "cartOverloading", cartOverloading.get());
-				setFieldSafe(configObj, "crossbowCarting", crossbowCarting.get());
-				setFieldSafe(configObj, "safeXbow", safeXbow.get());
-				setFieldSafe(configObj, "autoWebbing", autoWebbing.get());
-				setFieldSafe(configObj, "cartReplenishing", cartReplenishing.get());
-				setFieldSafe(configObj, "cartReplenishingSpeed", cartReplenishingSpeed.get());
-				setFieldSafe(configObj, "replenishSlotsAbove", replenishSlotsAbove.get());
-				setFieldSafe(configObj, "tickVariance", cartTickVariance.get());
-				setFieldSafe(configObj, "soundEffects", cartSoundEffects.get());
-				setFieldSafe(configObj, "chatLogs", cartChatLogs.get());
+				setFieldSafe(configObj, "instaCarting", this.instaCarting.get());
+				setFieldSafe(configObj, "cartOverloading", this.cartOverloading.get());
+				setFieldSafe(configObj, "crossbowCarting", this.crossbowCarting.get());
+				setFieldSafe(configObj, "safeXbow", this.safeXbow.get());
+				setFieldSafe(configObj, "autoWebbing", this.autoWebbing.get());
+				setFieldSafe(configObj, "cartReplenishing", this.cartReplenishing.get());
+				setFieldSafe(configObj, "cartReplenishingSpeed", this.cartReplenishingSpeed.get());
+				setFieldSafe(configObj, "replenishSlotsAbove", this.replenishSlotsAbove.get());
+				setFieldSafe(configObj, "tickVariance", this.cartTickVariance.get());
+				setFieldSafe(configObj, "soundEffects", this.cartSoundEffects.get());
+				setFieldSafe(configObj, "chatLogs", this.cartChatLogs.get());
 			}
 		} catch (Throwable ignored) {
 		}
@@ -372,12 +468,12 @@ public class CheatMods extends AbstractModule {
 				}
 			}
 			if (configObj != null) {
-				setFieldSafe(configObj, "dashing", spearDashing.get());
-				setFieldSafe(configObj, "omnidirectionalDashing", spearOmnidirectionalDashing.get());
-				setFieldSafe(configObj, "rangeExtensions", spearRangeExtensions.get());
-				setFieldSafe(configObj, "soundEffects", spearSoundEffects.get());
-				setFieldSafe(configObj, "particleEffects", spearParticleEffects.get());
-				setFieldSafe(configObj, "chatLogs", spearChatLogs.get());
+				setFieldSafe(configObj, "dashing", this.spearDashing.get());
+				setFieldSafe(configObj, "omnidirectionalDashing", this.spearOmnidirectionalDashing.get());
+				setFieldSafe(configObj, "rangeExtensions", this.spearRangeExtensions.get());
+				setFieldSafe(configObj, "soundEffects", this.spearSoundEffects.get());
+				setFieldSafe(configObj, "particleEffects", this.spearParticleEffects.get());
+				setFieldSafe(configObj, "chatLogs", this.spearChatLogs.get());
 			}
 		} catch (Throwable ignored) {
 		}
@@ -396,26 +492,26 @@ public class CheatMods extends AbstractModule {
 				}
 			}
 			if (configObj != null) {
-				setFieldSafe(configObj, "axeSwapping", maceAxeSwapping.get());
-				setFieldSafe(configObj, "pearlCatching", macePearlCatching.get());
-				setFieldSafe(configObj, "swordSwapping", maceSwordSwapping.get());
-				setFieldSafe(configObj, "shieldSlamming", maceShieldSlamming.get());
-				setFieldSafe(configObj, "autoAxeShift", maceAutoAxeShift.get());
-				setFieldSafe(configObj, "aimAssist", maceAimAssist.get());
-				setFieldSafe(configObj, "aimAssistLenience", maceAimAssistLenience.get());
-				setFieldSafe(configObj, "aimAssistSpeedMultiplier", maceAimAssistSpeedMultiplier.get());
-				setFieldSafe(configObj, "aimAssistRangeInBlocks", maceAimAssistRangeInBlocks.get());
-				setFieldSafe(configObj, "freeHitting", maceFreeHitting.get());
-				setFieldSafe(configObj, "soundEffects", maceSoundEffects.get());
-				setFieldSafe(configObj, "legacyGlidingFov", maceLegacyGlidingFov.get());
-				setFieldSafe(configObj, "shieldDraining", maceShieldDraining.get());
-				setFieldSafe(configObj, "shieldDrainingTickVariance", maceShieldDrainingTickVariance.get());
-				setFieldSafe(configObj, "particleEffects", maceParticleEffects.get());
-				setFieldSafe(configObj, "elytraPotting", maceElytraPotting.get());
-				setFieldSafe(configObj, "smartR", maceSmartR.get());
-				setFieldSafe(configObj, "elySwap", maceElySwap.get());
-				setFieldSafe(configObj, "chatLogs", maceChatLogs.get());
-				setFieldSafe(configObj, "tickVariance", maceTickVariance.get());
+				setFieldSafe(configObj, "axeSwapping", this.maceAxeSwapping.get());
+				setFieldSafe(configObj, "pearlCatching", this.macePearlCatching.get());
+				setFieldSafe(configObj, "swordSwapping", this.maceSwordSwapping.get());
+				setFieldSafe(configObj, "shieldSlamming", this.maceShieldSlamming.get());
+				setFieldSafe(configObj, "autoAxeShift", this.maceAutoAxeShift.get());
+				setFieldSafe(configObj, "aimAssist", this.maceAimAssist.get());
+				setFieldSafe(configObj, "aimAssistLenience", this.maceAimAssistLenience.get());
+				setFieldSafe(configObj, "aimAssistSpeedMultiplier", this.maceAimAssistSpeedMultiplier.get());
+				setFieldSafe(configObj, "aimAssistRangeInBlocks", this.maceAimAssistRangeInBlocks.get());
+				setFieldSafe(configObj, "freeHitting", this.maceFreeHitting.get());
+				setFieldSafe(configObj, "soundEffects", this.maceSoundEffects.get());
+				setFieldSafe(configObj, "legacyGlidingFov", this.maceLegacyGlidingFov.get());
+				setFieldSafe(configObj, "shieldDraining", this.maceShieldDraining.get());
+				setFieldSafe(configObj, "shieldDrainingTickVariance", this.maceShieldDrainingTickVariance.get());
+				setFieldSafe(configObj, "particleEffects", this.maceParticleEffects.get());
+				setFieldSafe(configObj, "elytraPotting", this.maceElytraPotting.get());
+				setFieldSafe(configObj, "smartR", this.maceSmartR.get());
+				setFieldSafe(configObj, "elySwap", this.maceElySwap.get());
+				setFieldSafe(configObj, "chatLogs", this.maceChatLogs.get());
+				setFieldSafe(configObj, "tickVariance", this.maceTickVariance.get());
 
 				// Sync Extras section if present
 				try {
@@ -429,10 +525,10 @@ public class CheatMods extends AbstractModule {
 						}
 					}
 					if (extrasObj != null) {
-						setFieldSafe(extrasObj, "elytraBounce", maceElytraBounce.get());
-						setFieldSafe(extrasObj, "aimAssistFallOnly", maceAimAssistFallOnly.get());
-						setFieldSafe(extrasObj, "swordSwapDensityOnly", maceSwordSwapDensityOnly.get());
-						setFieldSafe(extrasObj, "mobAutoTarget", maceMobAutoTarget.get());
+						setFieldSafe(extrasObj, "elytraBounce", this.maceElytraBounce.get());
+						setFieldSafe(extrasObj, "aimAssistFallOnly", this.maceAimAssistFallOnly.get());
+						setFieldSafe(extrasObj, "swordSwapDensityOnly", this.maceSwordSwapDensityOnly.get());
+						setFieldSafe(extrasObj, "mobAutoTarget", this.maceMobAutoTarget.get());
 					}
 				} catch (Throwable ignored) {
 				}
@@ -458,7 +554,8 @@ public class CheatMods extends AbstractModule {
 		}
 	}
 
-	private static void setFieldSafe(Object target, String fieldName, Object value) {
+	public static void setFieldSafe(Object target, String fieldName, Object value) {
+		if (target == null) return;
 		try {
 			Field field = target.getClass().getField(fieldName);
 			field.setAccessible(true);
@@ -473,18 +570,38 @@ public class CheatMods extends AbstractModule {
 		}
 	}
 
-	private void handleAutoCart() {
-		if (client == null || client.player == null || client.gameMode == null || client.level == null) return;
-		if (client.player.isUsingItem() && client.player.getUseItem().getItem().getDescriptionId().contains("bow")) {
-			HitResult hit = client.hitResult;
-			if (hit instanceof BlockHitResult blockHit && hit.getType() == HitResult.Type.BLOCK) {
-				double distSq = client.player.distanceToSqr(hit.getLocation());
-				if (distSq <= 20.25) { // within ~4.5 blocks placeable reach
-					client.gameMode.useItemOn(client.player, InteractionHand.MAIN_HAND, blockHit);
-					client.player.swing(InteractionHand.MAIN_HAND);
-				}
-			}
-		}
+	private void runRuntimeAudit() {
+		System.out.println("================== [CatClient Runtime Audit] ==================");
+		boolean cartcore = isClassAvailable("thetruetrident.cartcore.CartcoreCore");
+		boolean spearcore = isClassAvailable("thetruetrident.spearcore.SpearcoreClient");
+		boolean macecore = isClassAvailable("thetruetrident.macecore.MacecoreClient");
+		boolean prestige = isClassAvailable("juxxl.prestige.Prestige");
+
+		int working = 0;
+		int total = 87;
+
+		// Audit 23 Combat + 12 Misc + 8 Render + 3 Client = 46 Prestige options
+		String statusPrestige = prestige ? "WORKING" : "DUMMY";
+		if (prestige) working += 46;
+
+		// Audit 11 Cart options
+		String statusCart = cartcore ? "WORKING" : "DUMMY";
+		if (cartcore) working += 11;
+
+		// Audit 6 Spear options
+		String statusSpear = spearcore ? "WORKING" : "DUMMY";
+		if (spearcore) working += 6;
+
+		// Audit 24 Mace options
+		String statusMace = macecore ? "WORKING" : "DUMMY";
+		if (macecore) working += 24;
+
+		System.out.println("Cart Options (11): " + statusCart);
+		System.out.println("Spear Options (6): " + statusSpear);
+		System.out.println("Mace Options (24): " + statusMace);
+		System.out.println("Prestige Options (46): " + statusPrestige);
+		System.out.println(total + " options, " + working + " working, " + (total - working) + " dummy/broken");
+		System.out.println("===============================================================");
 	}
 
 	public OptionCategory getCategory() {

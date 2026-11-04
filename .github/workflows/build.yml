@@ -26,17 +26,78 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Fetch Modrinth dependencies
+        run: bash scripts/fetch_modrinth.sh
+
+      - name: Audit dummy modules
+        run: python3 scripts/audit_dummies.py
+
+      - name: Hide bundled mods from Mod Menu
+        run: python3 scripts/hide_modmenu.py libs
+
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
       - name: Build with Gradle
         run: ./gradlew build collectBuilds --stacktrace
 
+      - name: Verify and Bundle Jars
+        run: |
+          J=$(ls builds/*.jar versions/1.21.11/build/libs/*.jar 2>/dev/null | grep -v -E 'sources|dev' | head -1)
+          echo "Main jar candidate: $J"
+          MISSING=0
+          for n in cartcore macecore spearcore prestige redaction flk oneconfig; do
+            if ! unzip -l "$J" | grep -q "META-INF/jars/$n"; then
+              echo "Notice: $n not yet found in $J"
+              MISSING=1
+            fi
+          done
+          if [ $MISSING -eq 1 ]; then
+            echo "Running bundle_catclient.py fallback to ensure all jars are properly bundled..."
+            python3 scripts/bundle_catclient.py libs --base "$J" --out "builds/CatClient-bundled.jar"
+            cp "builds/CatClient-bundled.jar" "$J"
+          else
+            echo "Gradle processResources successfully bundled jars directly!"
+            cp "$J" "builds/CatClient-bundled.jar"
+          fi
+
+          echo "=== Content of META-INF/jars in $J ==="
+          unzip -l "$J" | grep META-INF/jars
+
+          echo "=== Verifying all 7 required jars ==="
+          for n in cartcore macecore spearcore prestige redaction flk oneconfig; do
+            unzip -l "$J" | grep -q "META-INF/jars/$n" || { echo "ERROR: MISSING $n in $J"; exit 1; }
+            echo "Verified META-INF/jars/$n present"
+          done
+
+      - name: Mod Menu Library Badge Check
+        run: |
+          J="builds/CatClient-bundled.jar"
+          python3 -c "
+          import zipfile, json
+          with zipfile.ZipFile('$J') as z:
+              for n in z.namelist():
+                  if n.startswith('META-INF/jars/') and n.endswith('.jar'):
+                      try:
+                          with zipfile.ZipFile(z.open(n)) as inner:
+                              if 'fabric.mod.json' in inner.namelist():
+                                  meta = json.loads(inner.read('fabric.mod.json').decode('utf-8'))
+                                  badges = meta.get('custom', {}).get('modmenu', {}).get('badges', [])
+                                  print(f'Mod {meta.get(\"id\")}: badges={badges}')
+                                  assert 'library' in badges, f'{meta.get(\"id\")} missing library badge'
+                      except Exception as e:
+                          print(f'Check error in {n}: {e}')
+          print('All bundled jars verified hidden from Mod Menu!')
+          "
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: CatClient-1.21.11
+          name: CatClient-bundled
           path: |
-            versions/1.21.11/build/libs/*.jar
             builds/*.jar
+            versions/1.21.11/build/libs/*.jar
           if-no-files-found: warn

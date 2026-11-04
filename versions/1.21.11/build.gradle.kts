@@ -84,6 +84,11 @@ tasks.processResources {
 	filesMatching("fabric.mod.json") {
 		expand("version" to version)
 	}
+
+	from(rootProject.file("libs")) {
+		include("*.jar")
+		into("META-INF/jars")
+	}
 }
 
 tasks.withType(JavaCompile::class).configureEach {

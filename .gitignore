@@ -40,3 +40,12 @@ workspace/
 builds/
 prompt.md
 
+# Dynamic libs fetched in CI
+libs/flk.jar
+libs/oneconfig.jar
+libs/fzzy_config.jar
+
+# Python bytecode
+__pycache__/
+*.pyc
+

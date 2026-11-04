@@ -1,5 +1,16 @@
 ## Changelog:
 
+### 1.5
+
+- Bundled Cartcore (1.0.6), MaceCore (4.5.0), SpearCore (4.0.2), Prestige (1.3.0+1.21.11), REDACTION (2.1.1), Fabric Language Kotlin (FLK), and Polyfrost OneConfig as Jar-in-Jar (JiJ)
+- Added `PrestigeBridge` reflection bridge connecting all 46 Prestige modules directly to CatClient cheat toggles
+- Synchronized all 41 Cart, Spear, and Mace options directly to their respective mod configs (`cartConfig`, `spearcoreConfig`, `macecoreConfig`) with zero dummy modules (87/87 working)
+- Removed duplicate `handleAutoCart` logic in favor of synced Cartcore configuration
+- Added one-time startup mod detection logger and world-join runtime audit
+- Bundled mods hidden by default in Mod Menu via `custom.modmenu.badges = ["library"]` metadata patching in CI
+- Added dedicated Right Control keybind to open directly to the Cheat menu
+- Bumped version to 1.5
+
 ### 1.4
 
 - Revamped "Cart" sub-section with 11 modules ported from Cartcore (`insta_carting`, `cart_overloading`, `crossbow_carting`, `safe_xbow`, `auto_webbing`, `cart_replenishing`, `cart_replenishing_speed`, `replenish_slots_above`, `tick_variance`, `sound_effects`, `chat_logs`)

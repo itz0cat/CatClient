@@ -38,6 +38,29 @@
 	"custom": {
 		"catclient:bridge_impl_version": "V1_21_11"
 	},
+	"jars": [
+		{
+			"file": "META-INF/jars/cartcore.jar"
+		},
+		{
+			"file": "META-INF/jars/macecore.jar"
+		},
+		{
+			"file": "META-INF/jars/spearcore.jar"
+		},
+		{
+			"file": "META-INF/jars/prestige.jar"
+		},
+		{
+			"file": "META-INF/jars/redaction.jar"
+		},
+		{
+			"file": "META-INF/jars/flk.jar"
+		},
+		{
+			"file": "META-INF/jars/oneconfig.jar"
+		}
+	],
 	"depends": {
 		"fabricloader": ">=0.15.0",
 		"minecraft": "1.21.11",
