@@ -1,5 +1,14 @@
 ## Changelog:
 
+### 1.4
+
+- Revamped "Cart" sub-section with 11 modules ported from Cartcore (`insta_carting`, `cart_overloading`, `crossbow_carting`, `safe_xbow`, `auto_webbing`, `cart_replenishing`, `cart_replenishing_speed`, `replenish_slots_above`, `tick_variance`, `sound_effects`, `chat_logs`)
+- Added dedicated "Spear" sub-section under Cheat with 6 modules ported from SpearCore (`dashing`, `omnidirectional_dashing`, `range_extensions`, `sound_effects`, `particle_effects`, `chat_logs`)
+- Added dedicated "Mace" sub-section under Cheat with 24 modules ported from MaceCore (`axe_swapping`, `pearl_catching`, `sword_swapping`, `shield_slamming`, `auto_axe_shift`, `aim_assist`, `free_hitting`, `sound_effects`, `legacy_gliding_fov`, `shield_draining`, `particle_effects`, `elytra_potting`, `smart_r`, `ely_swap`, `chat_logs`, `tick_variance`, `elytra_bounce`, `aim_assist_fall_only`, `sword_swap_density_only`, `mob_auto_target`, and aim tuning sliders)
+- Added native GUI configuration bridge for Cartcore, SpearCore, and MaceCore, eliminating external plugin dependencies (`fzzy_config`/Kotlin) and providing continuous live config synchronization
+- Added Right Control (`RCONTROL`) shortcut keybinding to open directly into the Cheat menu
+- Bumped client version to 1.4
+
 ### 1.3.1
 
 - Add dedicated "Cart" sub-section under Cheat menu

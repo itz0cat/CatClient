@@ -43,4 +43,18 @@ public class KeyboardHandlerMixin {
 			ci.cancel();
 		}
 	}
+
+	@Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
+	private void actionForCheatKey(long handle, int action, KeyEvent event, CallbackInfo ci) {
+		if (action == 1 /* GLFW_PRESS */) {
+			KeyMapping cheatKey = io.github.axolotlclient.modules.cheat.CheatMods.getInstance().openCheatKey;
+			if (cheatKey != null && cheatKey.matches(event)) {
+				var screen = net.minecraft.client.Minecraft.getInstance().screen;
+				if (!(screen instanceof net.minecraft.client.gui.screens.ChatScreen)) {
+					io.github.axolotlclient.modules.cheat.CheatMods.getInstance().openCheatMenu();
+					ci.cancel();
+				}
+			}
+		}
+	}
 }
